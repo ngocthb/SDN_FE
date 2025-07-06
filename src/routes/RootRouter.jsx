@@ -7,7 +7,6 @@ import Messenger from "../pages/Messenger";
 import AdminMembershipPage from "../pages/admin/AdminMembershipPage";
 import CheckResetOTP from "../pages/CheckResetOTP";
 
-import PublicRoute from "./PublicRoute";
 import CoachRoute from "./CoachRoute";
 import PrivateRoute from "./PrivateRoute";
 import Profile from "../pages/Profile";
@@ -79,12 +78,13 @@ const RootRouter = () => {
           </CoachRoute>
         }
       />
-      <Route path="profile" element={
+       <Route path="profile" element={
         <PrivateRoute>
           <Profile />
         </PrivateRoute>
 
       }
+      />
       <Route
         path="/admin/memberships"
         element={
