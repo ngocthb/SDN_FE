@@ -1,15 +1,21 @@
-import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import Homepage from "../pages/Homepage";
 import Messenger from "../pages/Messenger";
+import AdminMembershipPage from "../pages/admin/AdminMembershipPage";
+import CheckResetOTP from "../pages/CheckResetOTP";
 
 import PublicRoute from "./PublicRoute";
 import CoachRoute from "./CoachRoute";
 import PrivateRoute from "./PrivateRoute";
 import Profile from "../pages/Profile";
+import AdminRoute from "./AdminRoute";
+import AuthRoute from "./AuthRoute";
+import VerifyOTP from "../pages/VerifyOTP";
+import ForgotPassword from "../pages/ForgotPassword";
+import ResetPassword from "../pages/ResetPassword";
 
 const RootRouter = () => {
   return (
@@ -18,17 +24,50 @@ const RootRouter = () => {
       <Route
         path="/login"
         element={
-          <PublicRoute>
+          <AuthRoute>
             <Login />
-          </PublicRoute>
+          </AuthRoute>
         }
       />
       <Route
         path="/register"
         element={
-          <PublicRoute>
+          <AuthRoute>
             <Register />
-          </PublicRoute>
+          </AuthRoute>
+        }
+      />
+      <Route
+        path="/verify-otp"
+        element={
+          <AuthRoute>
+            <VerifyOTP />
+          </AuthRoute>
+        }
+      />
+      <Route
+        path="/forgot-password"
+        element={
+          <AuthRoute>
+            <ForgotPassword />
+          </AuthRoute>
+        }
+      />
+      
+      <Route
+        path="/reset-password"
+        element={
+          <AuthRoute>
+            <ResetPassword />
+          </AuthRoute>
+        }
+      />
+      <Route
+        path="/check-reset-otp"
+        element={
+          <AuthRoute>
+            <CheckResetOTP />
+          </AuthRoute>
         }
       />
       <Route path="/home" element={<Homepage />} />
@@ -46,6 +85,13 @@ const RootRouter = () => {
         </PrivateRoute>
 
       }
+      <Route
+        path="/admin/memberships"
+        element={
+          <AdminRoute>
+            <AdminMembershipPage />
+          </AdminRoute>
+        }
       />
     </Routes>
   );

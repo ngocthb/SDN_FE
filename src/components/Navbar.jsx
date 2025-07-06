@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { IoHomeOutline, IoLogOutOutline, IoSparklesOutline } from 'react-icons/io5';
 
@@ -7,7 +6,6 @@ function Navbar() {
   const navigate = useNavigate();
 
   const token = localStorage.getItem('token');
-  const role = localStorage.getItem('role');
   const userName = localStorage.getItem('userName');
   const userAvatar = localStorage.getItem('userAvatar');
 
