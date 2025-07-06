@@ -217,12 +217,18 @@ function Messenger() {
                         : 'bg-white/20 backdrop-blur-md border border-white/30 text-white'
                         }`}
                     >
-                      <p className="text-sm">{msg.message}</p>
-                      <p className={`text-xs mt-2 ${loginUserId === msg.senderId._id ? 'text-white/80' : 'text-white/60'
-                        }`}>
-                        {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      <p className="text-sm break-words whitespace-pre-wrap">{msg.message}</p>
+                      <p
+                        className={`text-xs mt-2 ${loginUserId === msg.senderId._id ? 'text-white/80' : 'text-white/60'
+                          }`}
+                      >
+                        {new Date(msg.createdAt).toLocaleTimeString([], {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
                       </p>
                     </div>
+
                   </div>
                 ))}
                 {isTyping && typingUser && (

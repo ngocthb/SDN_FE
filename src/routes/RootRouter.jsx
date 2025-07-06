@@ -8,6 +8,8 @@ import Messenger from "../pages/Messenger";
 
 import PublicRoute from "./PublicRoute";
 import CoachRoute from "./CoachRoute";
+import PrivateRoute from "./PrivateRoute";
+import Profile from "../pages/Profile";
 
 const RootRouter = () => {
   return (
@@ -37,6 +39,13 @@ const RootRouter = () => {
             <Messenger />
           </CoachRoute>
         }
+      />
+      <Route path="profile" element={
+        <PrivateRoute>
+          <Profile />
+        </PrivateRoute>
+
+      }
       />
     </Routes>
   );
