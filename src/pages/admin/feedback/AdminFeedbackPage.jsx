@@ -329,7 +329,7 @@ function AdminFeedbackPage() {
               ) : (
                 <>
                   <div className="overflow-x-auto">
-                    <table className="w-full text-white table-fixed">
+                    <table className="w-full text-white ">
                       <thead>
                         <tr className="border-b border-white/20">
                           <th className="text-left py-3 w-48">User</th>
