@@ -1,12 +1,31 @@
 import { NavLink } from "react-router-dom";
-import { IoHomeOutline, IoPeopleOutline, IoStatsChartOutline, IoCardOutline } from "react-icons/io5";
+import {
+  IoHomeOutline,
+  IoPeopleOutline,
+  IoStatsChartOutline,
+  IoCardOutline,
+} from "react-icons/io5";
+import { MdFeedback, MdOutlineRateReview } from "react-icons/md";
 
 const Sidebar = () => {
   const menuItems = [
-    { name: "Dashboard", path: "/admin/dashboard", icon: <IoStatsChartOutline /> },
+    {
+      name: "Dashboard",
+      path: "/admin/dashboard",
+      icon: <IoStatsChartOutline />,
+    },
     { name: "User Profiles", path: "/admin/users", icon: <IoPeopleOutline /> },
-    { name: "Ratings/Feedback", path: "/admin/feedback", icon: <IoHomeOutline /> },
-    { name: "Membership Management", path: "/admin/memberships", icon: <IoCardOutline /> },
+    { name: "Ratings", path: "/admin/ratings", icon: <MdFeedback /> },
+    {
+      name: "Feedback",
+      path: "/admin/feedback",
+      icon: <MdOutlineRateReview />,
+    },
+    {
+      name: "Membership Management",
+      path: "/admin/memberships",
+      icon: <IoCardOutline />,
+    },
   ];
 
   return (

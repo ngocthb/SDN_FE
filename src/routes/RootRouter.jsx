@@ -9,6 +9,9 @@ import AdminMembershipPage from "../pages/admin/AdminMembershipPage";
 import PublicRoute from "./PublicRoute";
 import CoachRoute from "./CoachRoute";
 import AdminRoute from "./AdminRoute";
+import AdminFeedbackPage from "../pages/admin/feedback/AdminFeedbackPage";
+import AdminRatingPage from "../pages/admin/rating/AdminRatingPage";
+import AdminUserPage from "../pages/user/AdminUserPage";
 
 const RootRouter = () => {
   return (
@@ -44,6 +47,31 @@ const RootRouter = () => {
         element={
           <AdminRoute>
             <AdminMembershipPage />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/feedback"
+        element={
+          <AdminRoute>
+            <AdminFeedbackPage />
+          </AdminRoute>
+        }
+      />
+
+      <Route
+        path="/admin/ratings"
+        element={
+          <AdminRoute>
+            <AdminRatingPage />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/users"
+        element={
+          <AdminRoute>
+            <AdminUserPage />
           </AdminRoute>
         }
       />

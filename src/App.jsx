@@ -1,8 +1,7 @@
-
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { AuthProvider } from './context/AuthContext';
-import RootRouter from './routes/RootRouter';
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { AuthProvider } from "./context/AuthContext";
+import RootRouter from "./routes/RootRouter";
 
 function App() {
   return (
