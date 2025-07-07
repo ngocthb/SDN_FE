@@ -12,6 +12,7 @@ export const fetchLoginThunk = createAsyncThunk(
             localStorage.setItem('userName', res.data.data.user.name);
             localStorage.setItem('userAvatar', res.data.data.user.picture);
             localStorage.setItem('token', token);
+            console.log('Token saved:', token);
             if (res.data.data.user.isAdmin === true) {
                 localStorage.setItem('role', 'admin');
             } else if (res.data.data.user.isCoach === true) {

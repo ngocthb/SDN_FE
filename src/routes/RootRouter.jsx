@@ -6,12 +6,17 @@ import Homepage from "../pages/Homepage";
 import Messenger from "../pages/Messenger";
 import AdminMembershipPage from "../pages/admin/AdminMembershipPage";
 import CheckResetOTP from "../pages/CheckResetOTP";
+import SmokingStatus from "../pages/user/SmokingStatus";
+import Statistics from "../pages/user/Statistic";
+import QuitPlan from "../pages/user/QuitPlan";
+import ProgressLog from "../pages/user/ProgressLog";
 
 import CoachRoute from "./CoachRoute";
 import PrivateRoute from "./PrivateRoute";
 import Profile from "../pages/Profile";
 import AdminRoute from "./AdminRoute";
 import AuthRoute from "./AuthRoute";
+import UserRoute from "./UserRoute";
 import VerifyOTP from "../pages/VerifyOTP";
 import ForgotPassword from "../pages/ForgotPassword";
 import ResetPassword from "../pages/ResetPassword";
@@ -52,7 +57,7 @@ const RootRouter = () => {
           </AuthRoute>
         }
       />
-      
+
       <Route
         path="/reset-password"
         element={
@@ -78,12 +83,13 @@ const RootRouter = () => {
           </CoachRoute>
         }
       />
-       <Route path="profile" element={
-        <PrivateRoute>
-          <Profile />
-        </PrivateRoute>
-
-      }
+      <Route
+        path="profile"
+        element={
+          <PrivateRoute>
+            <Profile />
+          </PrivateRoute>
+        }
       />
       <Route
         path="/admin/memberships"
@@ -91,6 +97,38 @@ const RootRouter = () => {
           <AdminRoute>
             <AdminMembershipPage />
           </AdminRoute>
+        }
+      />
+      <Route
+        path="/smoking-status"
+        element={
+          <UserRoute>
+            <SmokingStatus />
+          </UserRoute>
+        }
+      />
+      <Route
+        path="/statistics"
+        element={
+          <UserRoute>
+            <Statistics />
+          </UserRoute>
+        }
+      />
+      <Route
+        path="/quit-plan"
+        element={
+          <UserRoute>
+            <QuitPlan />
+          </UserRoute>
+        }
+      />
+      <Route
+        path="/progress-log"
+        element={
+          <UserRoute>
+            <ProgressLog />
+          </UserRoute>
         }
       />
     </Routes>
