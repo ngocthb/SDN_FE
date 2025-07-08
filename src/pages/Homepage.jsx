@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import Navbar from '../components/Navbar';
-import ChatPopup from '../components/ChatPopup';
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import Navbar from "../components/Navbar";
+import ChatPopup from "../components/ChatPopup";
 import {
   IoChatbubbleEllipsesOutline,
   IoPeopleOutline,
@@ -10,8 +10,9 @@ import {
   IoChatbubblesSharp,
   IoSettingsOutline,
   IoAddCircleOutline,
-  IoArrowForwardSharp
-} from 'react-icons/io5';
+  IoArrowForwardSharp,
+} from "react-icons/io5";
+import RatingPage from "../components/Rating";
 
 function Homepage() {
   const { user } = useAuth();
@@ -19,63 +20,81 @@ function Homepage() {
   const [selectedContact, setSelectedContact] = useState(null);
 
   const stats = [
-    { label: 'Messages Sent', value: '1,234', icon: <IoChatbubbleEllipsesOutline />, gradient: 'from-blue-500 to-purple-500' },
-    { label: 'Active Chats', value: '12', icon: <IoPeopleOutline />, gradient: 'from-purple-500 to-pink-500' },
-    { label: 'Days Active', value: '45', icon: <IoCalendarOutline />, gradient: 'from-pink-500 to-orange-500' },
+    {
+      label: "Messages Sent",
+      value: "1,234",
+      icon: <IoChatbubbleEllipsesOutline />,
+      gradient: "from-blue-500 to-purple-500",
+    },
+    {
+      label: "Active Chats",
+      value: "12",
+      icon: <IoPeopleOutline />,
+      gradient: "from-purple-500 to-pink-500",
+    },
+    {
+      label: "Days Active",
+      value: "45",
+      icon: <IoCalendarOutline />,
+      gradient: "from-pink-500 to-orange-500",
+    },
   ];
 
   const recentChats = [
     {
       id: 1,
-      name: 'Alice Johnson',
-      lastMessage: 'Hey, how are you doing?',
-      time: '2 min ago',
-      avatar: 'https://images.pexels.com/photos/1310522/pexels-photo-1310522.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop',
+      name: "Alice Johnson",
+      lastMessage: "Hey, how are you doing?",
+      time: "2 min ago",
+      avatar:
+        "https://images.pexels.com/photos/1310522/pexels-photo-1310522.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop",
       unread: 2,
-      status: 'online'
+      status: "online",
     },
     {
       id: 2,
-      name: 'Bob Smith',
-      lastMessage: 'Let\'s meet tomorrow for lunch',
-      time: '1 hour ago',
-      avatar: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop',
+      name: "Bob Smith",
+      lastMessage: "Let's meet tomorrow for lunch",
+      time: "1 hour ago",
+      avatar:
+        "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop",
       unread: 0,
-      status: 'offline'
+      status: "offline",
     },
     {
       id: 3,
-      name: 'Carol Williams',
-      lastMessage: 'Thanks for your help!',
-      time: '3 hours ago',
-      avatar: 'https://images.pexels.com/photos/1542085/pexels-photo-1542085.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop',
+      name: "Carol Williams",
+      lastMessage: "Thanks for your help!",
+      time: "3 hours ago",
+      avatar:
+        "https://images.pexels.com/photos/1542085/pexels-photo-1542085.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop",
       unread: 1,
-      status: 'online'
-    }
+      status: "online",
+    },
   ];
 
   const quickActions = [
     {
-      title: 'Start New Chat',
-      description: 'Begin a conversation with someone',
+      title: "Start New Chat",
+      description: "Begin a conversation with someone",
       icon: <IoChatbubblesSharp />,
-      gradient: 'from-blue-500 to-purple-500',
-      link: '/messenger'
+      gradient: "from-blue-500 to-purple-500",
+      link: "/messenger",
     },
     {
-      title: 'Create Group',
-      description: 'Start a group conversation',
+      title: "Create Group",
+      description: "Start a group conversation",
       icon: <IoPeopleOutline />,
-      gradient: 'from-purple-500 to-pink-500',
-      link: '#'
+      gradient: "from-purple-500 to-pink-500",
+      link: "#",
     },
     {
-      title: 'Settings',
-      description: 'Manage your preferences',
+      title: "Settings",
+      description: "Manage your preferences",
       icon: <IoSettingsOutline />,
-      gradient: 'from-pink-500 to-orange-500',
-      link: '#'
-    }
+      gradient: "from-pink-500 to-orange-500",
+      link: "#",
+    },
   ];
 
   const handleChatClick = (contact) => {
@@ -106,9 +125,15 @@ function Homepage() {
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {stats.map((stat, index) => (
-            <div key={index} className="floating-card animate-slide-up" style={{ animationDelay: `${index * 0.1}s` }}>
+            <div
+              key={index}
+              className="floating-card animate-slide-up"
+              style={{ animationDelay: `${index * 0.1}s` }}
+            >
               <div className="flex items-center">
-                <div className={`w-12 h-12 rounded-xl bg-gradient-to-r ${stat.gradient} flex items-center justify-center text-2xl shadow-lg text-white`}>
+                <div
+                  className={`w-12 h-12 rounded-xl bg-gradient-to-r ${stat.gradient} flex items-center justify-center text-2xl shadow-lg text-white`}
+                >
                   {stat.icon}
                 </div>
                 <div className="ml-4">
@@ -149,7 +174,13 @@ function Homepage() {
                       alt={chat.name}
                       className="w-12 h-12 rounded-full ring-2 ring-purple-400/50"
                     />
-                    <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-dark-800 ${chat.status === 'online' ? 'bg-green-500' : 'bg-gray-500'}`} />
+                    <div
+                      className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-dark-800 ${
+                        chat.status === "online"
+                          ? "bg-green-500"
+                          : "bg-gray-500"
+                      }`}
+                    />
                     {chat.unread > 0 && (
                       <div className="absolute -top-2 -right-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold shadow-lg">
                         {chat.unread}
@@ -172,7 +203,9 @@ function Homepage() {
 
           {/* Quick Actions */}
           <div className="glass-card p-6 animate-slide-up glow-effect">
-            <h2 className="text-2xl font-semibold text-white mb-6">Quick Actions ⚡</h2>
+            <h2 className="text-2xl font-semibold text-white mb-6">
+              Quick Actions ⚡
+            </h2>
 
             <div className="space-y-4">
               {quickActions.map((action, index) => (
@@ -182,12 +215,18 @@ function Homepage() {
                   className="flex items-center p-4 rounded-xl border border-white/20 hover:border-white/40 hover:bg-white/10 transition-all duration-300 group animate-slide-in"
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
-                  <div className={`w-12 h-12 bg-gradient-to-r ${action.gradient} rounded-xl flex items-center justify-center text-2xl shadow-lg text-white group-hover:scale-110 transition-transform duration-300`}>
+                  <div
+                    className={`w-12 h-12 bg-gradient-to-r ${action.gradient} rounded-xl flex items-center justify-center text-2xl shadow-lg text-white group-hover:scale-110 transition-transform duration-300`}
+                  >
                     {action.icon}
                   </div>
                   <div className="ml-4">
-                    <h3 className="font-medium text-white group-hover:text-purple-300 transition-colors">{action.title}</h3>
-                    <p className="text-sm text-white/60">{action.description}</p>
+                    <h3 className="font-medium text-white group-hover:text-purple-300 transition-colors">
+                      {action.title}
+                    </h3>
+                    <p className="text-sm text-white/60">
+                      {action.description}
+                    </p>
                   </div>
                   <div className="ml-auto text-white/40 group-hover:text-white/60 transition-colors">
                     <IoArrowForwardSharp />
@@ -208,6 +247,7 @@ function Homepage() {
       </div>
 
       <ChatPopup isOpen={isChatOpen} onClose={handleCloseChatPopup} />
+      <RatingPage />
     </div>
   );
 }

@@ -1,7 +1,7 @@
 // AdminUserPage.jsx
 import { useEffect, useState } from "react";
-import AdminNavbar from "../../components/admin/AdminNavbar";
-import Sidebar from "../../components/Sidebar";
+import AdminNavbar from "../../../components/admin/AdminNavbar";
+import Sidebar from "../../../components/Sidebar";
 import {
   IoSearchOutline,
   IoEyeOutline,
@@ -21,7 +21,7 @@ import {
   IoWomanOutline,
 } from "react-icons/io5";
 import AdminUserModal from "./AdminUserModal";
-import api from "../../config/axios";
+import api from "../../../config/axios";
 
 function AdminUserPage() {
   const [users, setUsers] = useState([]);

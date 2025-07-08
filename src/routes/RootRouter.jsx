@@ -11,7 +11,8 @@ import CoachRoute from "./CoachRoute";
 import AdminRoute from "./AdminRoute";
 import AdminFeedbackPage from "../pages/admin/feedback/AdminFeedbackPage";
 import AdminRatingPage from "../pages/admin/rating/AdminRatingPage";
-import AdminUserPage from "../pages/user/AdminUserPage";
+import AdminUserPage from "../pages/admin/user/AdminUserPage";
+import AdminDashboard from "../pages/admin/dashboard/AdminDashboard";
 
 const RootRouter = () => {
   return (
@@ -72,6 +73,14 @@ const RootRouter = () => {
         element={
           <AdminRoute>
             <AdminUserPage />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/dashboard"
+        element={
+          <AdminRoute>
+            <AdminDashboard />
           </AdminRoute>
         }
       />
