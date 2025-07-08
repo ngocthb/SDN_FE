@@ -9,12 +9,19 @@ import {
   calculateSmokingCost,
   clearError,
   clearSuccess,
+  clearSmokingStatusState,
 } from "../../redux/features/smokingStatus/smokingStatusSlice";
-
+import { getMySubscription } from "../../redux/features/subscription/subscriptionSlice";
 function SmokingStatus() {
   const dispatch = useDispatch();
   const { smokingStatus, costCalculation, loading, error, success, message } =
     useSelector((state) => state.smokingStatus);
+
+  const {
+    mySubscription,
+    hasActiveSubscription,
+    loading: subscriptionLoading,
+  } = useSelector((state) => state.subscription);
 
   const [showModal, setShowModal] = useState(false);
   const [showCostModal, setShowCostModal] = useState(false);
@@ -26,8 +33,20 @@ function SmokingStatus() {
   const [costDays, setCostDays] = useState(30);
 
   useEffect(() => {
-    dispatch(getSmokingStatus());
+    dispatch(getMySubscription());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (!hasActiveSubscription && !subscriptionLoading) {
+      dispatch(clearSmokingStatusState());
+    }
+  }, [hasActiveSubscription, subscriptionLoading, dispatch]);
+
+  useEffect(() => {
+    if (hasActiveSubscription && !subscriptionLoading) {
+      dispatch(getSmokingStatus());
+    }
+  }, [dispatch, hasActiveSubscription, subscriptionLoading]);
 
   useEffect(() => {
     if (error) {
@@ -113,6 +132,41 @@ function SmokingStatus() {
       currency: "VND",
     }).format(amount);
   };
+
+  if (!hasActiveSubscription) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-dark-900 via-purple-900/20 to-pink-900/20">
+        <Navbar />
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-4 py-3">
+              Tình Trạng Hút Thuốc
+            </h1>
+            <p className="text-gray-400">
+              Theo dõi và quản lý thông tin hút thuốc của bạn
+            </p>
+          </div>
+          <div className="glass-card p-6 rounded-xl mb-6 border border-red-500/30 bg-red-500/10">
+            <div className="flex items-center gap-3">
+              <div className="text-red-400 text-2xl">🚫</div>
+              <div>
+                <h3 className="font-semibold text-red-300 mb-1">
+                  Cần gói đăng ký để sử dụng
+                </h3>
+                <p className="text-gray-400 text-sm">
+                  Bạn cần có gói đăng ký để sử dụng tính năng này
+                </p>
+              </div>
+              <button className="ml-auto bg-purple-500/20 text-purple-300 border border-purple-500/30 hover:bg-purple-500/30 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300">
+                Đăng ký ngay
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-dark-900 via-purple-900/20 to-pink-900/20">

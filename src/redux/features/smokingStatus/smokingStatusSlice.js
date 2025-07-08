@@ -81,6 +81,9 @@ const smokingStatusSlice = createSlice({
             state.error = null;
             state.success = false;
             state.message = '';
+        },
+        clearSmokingStatusState: (state) => {
+            return initialState;
         }
     },
     extraReducers: (builder) => {
@@ -154,5 +157,5 @@ const smokingStatusSlice = createSlice({
     }
 });
 
-export const { clearError, clearSuccess, resetSmokingStatus } = smokingStatusSlice.actions;
+export const { clearError, clearSuccess, resetSmokingStatus, clearSmokingStatusState } = smokingStatusSlice.actions;
 export default smokingStatusSlice.reducer;

@@ -5,7 +5,9 @@ import {
   getProgressStatistics,
   getProgressChart,
   clearError,
+  clearProgressLogState,
 } from "../../redux/features/progressLog/progressLogSlice";
+import { getMySubscription } from "../../redux/features/subscription/subscriptionSlice";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -39,13 +41,30 @@ function Statistic() {
     (state) => state.progressLog
   );
 
+  const {
+    mySubscription,
+    hasActiveSubscription,
+    loading: subscriptionLoading,
+  } = useSelector((state) => state.subscription);
+
   const [chartDays, setChartDays] = useState(30);
 
   useEffect(() => {
-    // Load statistics and chart data on component mount
-    dispatch(getProgressStatistics());
-    dispatch(getProgressChart(chartDays));
-  }, [dispatch, chartDays]);
+    dispatch(getMySubscription());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (!hasActiveSubscription && !subscriptionLoading) {
+      dispatch(clearProgressLogState());
+    }
+  }, [hasActiveSubscription, subscriptionLoading, dispatch]);
+
+  useEffect(() => {
+    if (hasActiveSubscription && !subscriptionLoading) {
+      dispatch(getProgressStatistics());
+      dispatch(getProgressChart(chartDays));
+    }
+  }, [dispatch, chartDays, hasActiveSubscription, subscriptionLoading]);
 
   useEffect(() => {
     // Clear error after 5 seconds
@@ -316,6 +335,41 @@ function Statistic() {
     );
   }
 
+  if (!hasActiveSubscription) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-dark-900 via-purple-900/20 to-pink-900/20">
+        <Navbar />
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-4 py-3">
+              Thống Kê Tiến Trình
+            </h1>
+            <p className="text-gray-400">
+              Theo dõi và phân tích hành trình cai thuốc của bạn
+            </p>
+          </div>
+          <div className="glass-card p-6 rounded-xl mb-6 border border-red-500/30 bg-red-500/10">
+            <div className="flex items-center gap-3">
+              <div className="text-red-400 text-2xl">🚫</div>
+              <div>
+                <h3 className="font-semibold text-red-300 mb-1">
+                  Cần gói đăng ký để sử dụng
+                </h3>
+                <p className="text-gray-400 text-sm">
+                  Bạn cần có gói đăng ký để sử dụng tính năng này
+                </p>
+              </div>
+              <button className="ml-auto bg-purple-500/20 text-purple-300 border border-purple-500/30 hover:bg-purple-500/30 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300">
+                Đăng ký ngay
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (!statistics) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-dark-900 via-purple-900/20 to-pink-900/20">
@@ -349,6 +403,42 @@ function Statistic() {
             Theo dõi và phân tích hành trình cai thuốc của bạn
           </p>
         </div>
+
+        {!hasActiveSubscription && (
+          <div className="glass-card p-6 rounded-xl mb-6 border border-red-500/30 bg-red-500/10">
+            <div className="flex items-center gap-3">
+              <div className="text-red-400 text-2xl">🚫</div>
+              <div>
+                <h3 className="font-semibold text-red-300 mb-1">
+                  Cần gói đăng ký để sử dụng
+                </h3>
+                <p className="text-gray-400 text-sm">
+                  Bạn cần có gói đăng ký để sử dụng tính năng này
+                </p>
+              </div>
+              <button className="ml-auto bg-purple-500/20 text-purple-300 border border-purple-500/30 hover:bg-purple-500/30 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300">
+                Đăng ký ngay
+              </button>
+            </div>
+          </div>
+        )}
+
+        {!statistics && (
+          <div className="min-h-screen bg-gradient-to-br from-dark-900 via-purple-900/20 to-pink-900/20">
+            <Navbar />
+            <div className="max-w-7xl mx-auto px-4 py-8">
+              <div className="text-center py-16">
+                <div className="text-6xl mb-4">📊</div>
+                <h2 className="text-2xl font-bold text-white mb-4">
+                  Chưa có dữ liệu thống kê
+                </h2>
+                <p className="text-gray-400">
+                  Hãy bắt đầu ghi nhận tiến trình để xem thống kê chi tiết
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Overview Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">

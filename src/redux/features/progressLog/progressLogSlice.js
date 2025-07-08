@@ -121,6 +121,9 @@ const progressLogSlice = createSlice({
             state.error = null;
             state.success = false;
             state.message = '';
+        },
+        clearProgressLogState: (state) => {
+            return initialState;
         }
     },
     extraReducers: (builder) => {
@@ -231,6 +234,7 @@ export const {
     clearError,
     clearSuccess,
     clearNewAchievements,
-    resetProgressLog
+    resetProgressLog,
+    clearProgressLogState
 } = progressLogSlice.actions;
 export default progressLogSlice.reducer;

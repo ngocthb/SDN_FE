@@ -11,6 +11,7 @@ import {
   cancelPlan,
   clearError,
   clearSuccess,
+  clearQuitPlanState,
 } from "../../redux/features/quitPlan/quitPlanSlice";
 import { getMySubscription } from "../../redux/features/subscription/subscriptionSlice";
 function QuitPlan() {
@@ -40,10 +41,21 @@ function QuitPlan() {
   });
 
   useEffect(() => {
-    dispatch(getCurrentPlan());
-    dispatch(getCurrentStage());
     dispatch(getMySubscription());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (!hasActiveSubscription && !subscriptionLoading) {
+      dispatch(clearQuitPlanState());
+    }
+  }, [hasActiveSubscription, subscriptionLoading, dispatch]);
+
+  useEffect(() => {
+    if (hasActiveSubscription && !subscriptionLoading) {
+      dispatch(getCurrentPlan());
+      dispatch(getCurrentStage());
+    }
+  }, [dispatch, hasActiveSubscription, subscriptionLoading]);
 
   const clearFormData = () => {
     setPlanFormData({
@@ -283,6 +295,41 @@ function QuitPlan() {
     }
   };
 
+  if (!hasActiveSubscription) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-dark-900 via-purple-900/20 to-pink-900/20">
+        <Navbar />
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-4 py-3">
+              Kế Hoạch Cai Thuốc
+            </h1>
+            <p className="text-gray-400">
+              Tạo và theo dõi kế hoạch cai thuốc của bạn một cách khoa học
+            </p>
+          </div>
+          <div className="glass-card p-6 rounded-xl mb-6 border border-red-500/30 bg-red-500/10">
+            <div className="flex items-center gap-3">
+              <div className="text-red-400 text-2xl">🚫</div>
+              <div>
+                <h3 className="font-semibold text-red-300 mb-1">
+                  Cần gói đăng ký để sử dụng
+                </h3>
+                <p className="text-gray-400 text-sm">
+                  Bạn cần có gói đăng ký để sử dụng tính năng này
+                </p>
+              </div>
+              <button className="ml-auto bg-purple-500/20 text-purple-300 border border-purple-500/30 hover:bg-purple-500/30 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300">
+                Đăng ký ngay
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-dark-900 via-purple-900/20 to-pink-900/20">
       <Navbar />
@@ -342,21 +389,11 @@ function QuitPlan() {
           </div>
         )}
 
-        {!hasActiveSubscription && (
-          <div className="glass-card p-6 rounded-xl mb-6 border border-red-500/30 bg-red-500/10">
+        {error && (
+          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl">
             <div className="flex items-center gap-3">
-              <div className="text-red-400 text-2xl">🚫</div>
-              <div>
-                <h3 className="font-semibold text-red-300 mb-1">
-                  Cần gói đăng ký để sử dụng
-                </h3>
-                <p className="text-gray-400 text-sm">
-                  Bạn cần có gói đăng ký để tạo và quản lý kế hoạch cai thuốc
-                </p>
-              </div>
-              <button className="ml-auto bg-purple-500/20 text-purple-300 border border-purple-500/30 hover:bg-purple-500/30 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300">
-                Đăng ký ngay
-              </button>
+              <span className="text-red-400 text-xl">❌</span>
+              <p className="text-red-300">{error}</p>
             </div>
           </div>
         )}
