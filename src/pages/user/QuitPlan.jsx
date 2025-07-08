@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import Navbar from "../../components/Navbar";
@@ -13,9 +14,14 @@ import {
   clearSuccess,
   clearQuitPlanState,
 } from "../../redux/features/quitPlan/quitPlanSlice";
+import {
+  getSmokingStatus,
+  clearSmokingStatusState,
+} from "../../redux/features/smokingStatus/smokingStatusSlice";
 import { getMySubscription } from "../../redux/features/subscription/subscriptionSlice";
 function QuitPlan() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const {
     suggestedPlan,
     currentPlan,
@@ -32,6 +38,8 @@ function QuitPlan() {
     loading: subscriptionLoading,
   } = useSelector((state) => state.subscription);
 
+  const { smokingStatus } = useSelector((state) => state.smokingStatus);
+
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [onboardingStep, setOnboardingStep] = useState(1);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
@@ -47,6 +55,7 @@ function QuitPlan() {
   useEffect(() => {
     if (!hasActiveSubscription && !subscriptionLoading) {
       dispatch(clearQuitPlanState());
+      dispatch(clearSmokingStatusState());
     }
   }, [hasActiveSubscription, subscriptionLoading, dispatch]);
 
@@ -54,6 +63,7 @@ function QuitPlan() {
     if (hasActiveSubscription && !subscriptionLoading) {
       dispatch(getCurrentPlan());
       dispatch(getCurrentStage());
+      dispatch(getSmokingStatus());
     }
   }, [dispatch, hasActiveSubscription, subscriptionLoading]);
 
@@ -411,18 +421,51 @@ function QuitPlan() {
               hành trình này!
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
-              <button
-                onClick={handleGetSuggestions}
-                disabled={
-                  loading || subscriptionLoading || !hasActiveSubscription
-                }
-                className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-300 hover:scale-105 disabled:opacity-50"
-              >
-                {loading ? "Đang tải..." : "Tạo kế hoạch"}
-              </button>
-            </div>
-
+            {hasActiveSubscription && !smokingStatus && (
+              <div className="mb-6 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-xl">
+                <div className="flex items-center gap-3 flex-col">
+                  <span className="text-yellow-400 text-xl">⚠️</span>
+                  <div>
+                    <h3 className="font-semibold text-yellow-300 mb-1">
+                      Cần khai báo tình trạng hút thuốc
+                    </h3>
+                    <p className="text-gray-400 text-sm">
+                      Vui lòng khai báo tình trạng hút thuốc hiện tại để chúng
+                      tôi có thể tạo kế hoạch phù hợp cho bạn.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      // Navigate to smoking status page hoặc mở modal
+                      navigate("/smoking-status"); // Hoặc sử dụng router
+                    }}
+                    className="mx-auto bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 hover:bg-yellow-500/30 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300"
+                  >
+                    Khai báo ngay
+                  </button>
+                </div>
+              </div>
+            )}
+            {hasActiveSubscription && smokingStatus && (
+              <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
+                <button
+                  onClick={handleGetSuggestions}
+                  disabled={
+                    loading ||
+                    subscriptionLoading ||
+                    !hasActiveSubscription ||
+                    !smokingStatus
+                  }
+                  className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {loading
+                    ? "Đang tải..."
+                    : !smokingStatus
+                    ? "Vui lòng khai báo tình trạng hút thuốc trước"
+                    : "Tạo kế hoạch"}
+                </button>
+              </div>
+            )}
             <div className="mt-12 grid md:grid-cols-3 gap-6">
               <div className="bg-purple-500/10 rounded-xl p-6 border border-purple-500/20">
                 <div className="text-4xl mb-4">📋</div>

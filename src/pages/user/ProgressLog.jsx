@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Navbar from "../../components/Navbar";
 import {
@@ -10,9 +11,14 @@ import {
   clearNewAchievements,
   clearProgressLogState,
 } from "../../redux/features/progressLog/progressLogSlice";
+import {
+  getCurrentPlan,
+  clearQuitPlanState,
+} from "../../redux/features/quitPlan/quitPlanSlice";
 import { getMySubscription } from "../../redux/features/subscription/subscriptionSlice";
 function ProgressLog() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const {
     todayProgress,
     progressLogs,
@@ -28,6 +34,8 @@ function ProgressLog() {
     hasActiveSubscription,
     loading: subscriptionLoading,
   } = useSelector((state) => state.subscription);
+
+  const { currentPlan } = useSelector((state) => state.quitPlan);
 
   // Form states
   const [formData, setFormData] = useState({
@@ -61,12 +69,14 @@ function ProgressLog() {
 
   useEffect(() => {
     if (!hasActiveSubscription && !subscriptionLoading) {
+      dispatch(clearQuitPlanState());
       dispatch(clearProgressLogState());
     }
   }, [hasActiveSubscription, subscriptionLoading, dispatch]);
 
   useEffect(() => {
     if (hasActiveSubscription && !subscriptionLoading) {
+      dispatch(getCurrentPlan());
       dispatch(getTodayProgress());
       if (
         dateFilters.useDateFilter &&
@@ -349,34 +359,90 @@ function ProgressLog() {
 
         {/* New Achievements */}
         {newAchievements && newAchievements.length > 0 && (
-          <div className="mb-6 p-6 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-500/30 rounded-xl">
+          <div className="mb-6 p-6 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-500/30 rounded-xl animate-pulse">
             <div className="flex items-center gap-3 mb-4">
-              <span className="text-yellow-400 text-2xl">🏆</span>
-              <h3 className="text-xl font-bold text-yellow-300">
-                Chúc mừng! Bạn đã đạt được thành tựu mới!
-              </h3>
+              <span className="text-yellow-400 text-3xl animate-bounce">
+                🏆
+              </span>
+              <div>
+                <h3 className="text-xl font-bold text-yellow-300">
+                  Chúc mừng! Bạn đã đạt được{" "}
+                  {newAchievements.length > 1
+                    ? `${newAchievements.length} thành tựu mới`
+                    : "thành tựu mới"}
+                  !
+                </h3>
+                <p className="text-yellow-200 text-sm mt-1">
+                  {newAchievements.length > 1
+                    ? "Tuyệt vời! Bạn vừa mở khóa nhiều thành tựu cùng lúc!"
+                    : "Tiếp tục phấn đấu để đạt được nhiều thành tựu hơn!"}
+                </p>
+              </div>
             </div>
-            <div className="grid md:grid-cols-2 gap-4">
+
+            <div className="grid md:grid-cols-2 gap-4 mb-4">
               {newAchievements.map((achievement, index) => (
                 <div
-                  key={index}
-                  className="bg-yellow-500/10 rounded-lg p-4 border border-yellow-500/20"
+                  key={achievement._id || index}
+                  className="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-lg p-4 border border-yellow-500/30 transform hover:scale-105 transition-all duration-300"
                 >
-                  <h4 className="font-semibold text-yellow-300 mb-1">
-                    {achievement.name}
-                  </h4>
-                  <p className="text-yellow-200 text-sm">
-                    {achievement.description}
-                  </p>
+                  <div className="flex items-start gap-3">
+                    <span className="text-2xl">{achievement.icon || "🏅"}</span>
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-yellow-300 mb-1">
+                        {achievement.name}
+                      </h4>
+                      <p className="text-yellow-200 text-sm mb-2">
+                        {achievement.description}
+                      </p>
+                      {/* Hiển thị điểm nếu có */}
+                      {achievement.points && (
+                        <div className="flex items-center gap-1">
+                          <span className="text-xs text-yellow-400">⭐</span>
+                          <span className="text-xs text-yellow-400 font-medium">
+                            +{achievement.points} điểm
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
-            <button
-              onClick={() => dispatch(clearNewAchievements())}
-              className="mt-4 text-yellow-400 hover:text-yellow-300 text-sm font-medium"
-            >
-              Đóng thông báo
-            </button>
+
+            {/* Tổng kết điểm thưởng */}
+            {newAchievements.some((ach) => ach.points) && (
+              <div className="bg-yellow-500/10 rounded-lg p-3 mb-4 border border-yellow-500/20">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-yellow-300">
+                    🎯 Tổng điểm thưởng:
+                    <span className="font-bold ml-1">
+                      +
+                      {newAchievements.reduce(
+                        (sum, ach) => sum + (ach.points || 0),
+                        0
+                      )}{" "}
+                      điểm
+                    </span>
+                  </span>
+                  <span className="text-yellow-400 text-xs">
+                    🏆 {newAchievements.length} thành tựu
+                  </span>
+                </div>
+              </div>
+            )}
+
+            <div className="flex items-center justify-between">
+              <button
+                onClick={() => dispatch(clearNewAchievements())}
+                className="text-yellow-400 hover:text-yellow-300 text-sm font-medium transition-colors duration-200 hover:underline"
+              >
+                ✨ Đóng thông báo
+              </button>
+
+              {/* Có thể thêm nút xem tất cả achievements nếu cần */}
+              <div className="text-yellow-400 text-xs">Tuyệt vời! 🎉</div>
+            </div>
           </div>
         )}
 
@@ -389,12 +455,12 @@ function ProgressLog() {
                   <span className="text-green-400">📝</span>
                   Tiến trình hôm nay
                 </h2>
-                <button
+                {/* <button
                   onClick={handleOpenModal}
                   className="bg-blue-500/20 text-blue-300 border border-blue-500/30 hover:bg-blue-500/30 px-4 py-2 rounded-lg font-medium transition-all duration-300"
                 >
                   Cập nhật
-                </button>
+                </button> */}
               </div>
 
               <div className="grid md:grid-cols-3 gap-4">
@@ -465,12 +531,39 @@ function ProgressLog() {
                 Hãy ghi nhận tiến trình hôm nay để theo dõi hành trình cai thuốc
                 của bạn
               </p>
-              <button
-                onClick={handleOpenModal}
-                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-300 hover:scale-105"
-              >
-                Ghi nhận ngay
-              </button>
+              {hasActiveSubscription && !currentPlan && (
+                <div className="mb-6 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-xl">
+                  <div className="flex items-center gap-3 flex-col">
+                    <span className="text-yellow-400 text-xl">⚠️</span>
+                    <div>
+                      <h3 className="font-semibold text-yellow-300 mb-1">
+                        Cần tạo kế hoạch cai thuốc
+                      </h3>
+                      <p className="text-gray-400 text-sm">
+                        Vui lòng tạo kế hoạch cai thuốc để bắt đầu ghi nhận tiến
+                        trình
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        // Navigate to smoking status page hoặc mở modal
+                        navigate("/quit-plan"); // Hoặc sử dụng router
+                      }}
+                      className="mx-auto bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 hover:bg-yellow-500/30 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300"
+                    >
+                      Tạo kế hoạch ngay
+                    </button>
+                  </div>
+                </div>
+              )}
+              {hasActiveSubscription && currentPlan && (
+                <button
+                  onClick={handleOpenModal}
+                  className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-300 hover:scale-105"
+                >
+                  Ghi nhận ngay
+                </button>
+              )}
             </div>
           )}
         </div>

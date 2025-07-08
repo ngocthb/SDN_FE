@@ -269,7 +269,7 @@ function SmokingStatus() {
                 </p>
                 <button
                   onClick={() => openModal("create")}
-                  className="btn-primary flex items-center gap-2 mx-auto"
+                  className="bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 hover:bg-yellow-500/30 px-6 py-3 rounded-xl font-medium transition-all duration-300 flex items-center gap-2 mx-auto"
                   disabled={loading}
                 >
                   Khai báo
