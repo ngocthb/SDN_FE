@@ -194,13 +194,13 @@ function SmokingStatus() {
                   Tính chi phí
                 </button>
 
-                <button
+                {/* <button
                   onClick={handleDelete}
                   className="bg-red-500/20 text-red-300 border border-red-500/30 hover:bg-red-500/30 px-6 py-3 rounded-xl font-medium transition-all duration-300 flex items-center gap-2"
                   disabled={loading}
                 >
                   Xóa thông tin
-                </button>
+                </button> */}
               </div>
             </div>
           ) : (

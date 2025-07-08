@@ -199,7 +199,7 @@ const quitPlanSlice = createSlice({
             })
             .addCase(getCurrentPlan.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload?.message || 'Có lỗi xảy ra';
+                // state.error = action.payload?.message || 'Có lỗi xảy ra';
             })
 
             // Get Current Stage
@@ -214,7 +214,7 @@ const quitPlanSlice = createSlice({
             })
             .addCase(getCurrentStage.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload?.message || 'Có lỗi xảy ra';
+                // state.error = action.payload?.message || 'Có lỗi xảy ra';
             })
 
             // Get Stage By ID
@@ -229,7 +229,7 @@ const quitPlanSlice = createSlice({
             })
             .addCase(getStageById.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload?.message || 'Có lỗi xảy ra';
+                // state.error = action.payload?.message || 'Có lỗi xảy ra';
             })
 
             // Update Quit Plan

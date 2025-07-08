@@ -23,6 +23,7 @@ export const getTodayProgress = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             const response = await api.get('progress-logs/today');
+            console.log('Today Progress Response:', response.data);
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data || error.message);
