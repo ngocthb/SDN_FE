@@ -13,6 +13,7 @@ import {
   IoArrowForwardSharp,
 } from "react-icons/io5";
 import RatingPage from "../components/Rating";
+import FeedbackPage from "../components/Feedback";
 
 function Homepage() {
   const { user } = useAuth();
@@ -248,6 +249,7 @@ function Homepage() {
 
       <ChatPopup isOpen={isChatOpen} onClose={handleCloseChatPopup} />
       <RatingPage />
+      <FeedbackPage />
     </div>
   );
 }
