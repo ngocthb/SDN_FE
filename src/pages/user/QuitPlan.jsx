@@ -305,6 +305,37 @@ function QuitPlan() {
     }
   };
 
+  // Thêm function hasChanges() vào component
+  const hasChanges = () => {
+    if (!currentPlan?.plan || !currentStage?.allStagesWithProgress) return true;
+
+    // Kiểm tra thay đổi reason
+    const reasonChanged =
+      planFormData.reason.trim() !== currentPlan.plan.reason.trim();
+
+    // Kiểm tra thay đổi stages
+    const currentStages = currentStage.allStagesWithProgress || [];
+    const newStages = planFormData.customStages;
+
+    // So sánh số lượng stages
+    if (currentStages.length !== newStages.length) return true;
+
+    // So sánh từng stage
+    const stagesChanged = newStages.some((newStage, index) => {
+      const currentStage = currentStages[index];
+      if (!currentStage) return true;
+
+      return (
+        newStage.title.trim() !== currentStage.title.trim() ||
+        (newStage.description || "").trim() !==
+          (currentStage.description || "").trim() ||
+        newStage.daysToComplete !== currentStage.daysToComplete
+      );
+    });
+
+    return reasonChanged || stagesChanged;
+  };
+
   if (!hasActiveSubscription) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-dark-900 via-purple-900/20 to-pink-900/20">
@@ -893,7 +924,7 @@ function QuitPlan() {
               )}
 
               {/* Current Stage */}
-              {currentStage?.currentStage && (
+              {currentStage?.currentStage ? (
                 <div className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 rounded-xl p-6 border border-purple-500/20 mb-6">
                   <h3 className="text-xl font-bold text-white mb-3">
                     🎯 Giai đoạn hiện tại: {currentStage.currentStage.title}
@@ -927,11 +958,58 @@ function QuitPlan() {
                     </span>
                   </div>
                 </div>
+              ) : (
+                // ✅ THÊM MỚI: Hiển thị khi chưa có giai đoạn hiện tại
+                <div className="bg-gradient-to-r from-yellow-500/10 to-orange-500/10 rounded-xl p-6 border border-yellow-500/20 mb-6">
+                  <div className="text-center">
+                    <div className="text-6xl mb-4">📝</div>
+                    <h3 className="text-xl font-bold text-yellow-300 mb-3">
+                      Chưa có giai đoạn nào được thiết lập
+                    </h3>
+                    <p className="text-gray-300 mb-4">
+                      Kế hoạch của bạn chưa có giai đoạn cụ thể. Hãy cập nhật kế
+                      hoạch để thêm các giai đoạn chi tiết.
+                    </p>
+
+                    <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+                      <button
+                        onClick={() => {
+                          setPlanFormData({
+                            reason: currentPlan.plan.reason,
+                            customStages:
+                              currentStage?.allStagesWithProgress ||
+                              currentPlan.stages ||
+                              [],
+                          });
+                          setShowUpdateModal(true);
+                        }}
+                        className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 hover:scale-105 flex items-center gap-2"
+                      >
+                        <span>✏️</span>
+                        Cập nhật kế hoạch
+                      </button>
+
+                      <div className="text-yellow-400 text-sm">
+                        hoặc liên hệ hỗ trợ nếu cần thiết
+                      </div>
+                    </div>
+
+                    {/* Thông tin bổ sung */}
+                    <div className="mt-4 p-3 bg-yellow-500/5 border border-yellow-500/10 rounded-lg">
+                      <p className="text-yellow-200 text-sm">
+                        💡 <strong>Gợi ý:</strong> Bạn có thể thêm các giai đoạn
+                        như "Giảm số lượng thuốc", "Thay thế thói quen", "Ngừng
+                        hoàn toàn" để có kế hoạch chi tiết hơn.
+                      </p>
+                    </div>
+                  </div>
+                </div>
               )}
             </div>
 
             {/* All Stages */}
-            {currentStage?.allStagesWithProgress && (
+            {currentStage?.allStagesWithProgress &&
+            currentStage.allStagesWithProgress.length > 0 ? (
               <div className="glass-card p-8 rounded-2xl">
                 <h3 className="text-2xl font-bold text-white mb-6">
                   Tất cả giai đoạn
@@ -1014,6 +1092,111 @@ function QuitPlan() {
                       </div>
                     </div>
                   ))}
+                </div>
+              </div>
+            ) : (
+              // ✅ THÊM MỚI: Hiển thị khi chưa có giai đoạn nào trong danh sách
+              <div className="glass-card p-8 rounded-2xl">
+                <h3 className="text-2xl font-bold text-white mb-6">
+                  Tất cả giai đoạn
+                </h3>
+
+                <div className="bg-gradient-to-r from-gray-500/10 to-purple-500/10 rounded-xl p-8 border border-gray-500/20">
+                  <div className="text-center">
+                    <div className="text-8xl mb-6">📋</div>
+                    <h4 className="text-2xl font-bold text-purple-300 mb-3">
+                      Chưa có giai đoạn nào được tạo
+                    </h4>
+                    <p className="text-gray-300 mb-6 max-w-lg mx-auto">
+                      Kế hoạch của bạn chưa có các giai đoạn chi tiết. Để có một
+                      kế hoạch hoàn chỉnh, hãy thêm các giai đoạn cụ thể để theo
+                      dõi tiến độ tốt hơn.
+                    </p>
+
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                      <button
+                        onClick={() => {
+                          setPlanFormData({
+                            reason: currentPlan.plan.reason,
+                            customStages:
+                              currentStage?.allStagesWithProgress ||
+                              currentPlan.stages ||
+                              [],
+                          });
+                          setShowUpdateModal(true);
+                        }}
+                        className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-300 hover:scale-105 flex items-center gap-3 shadow-lg"
+                      >
+                        <span>✨</span>
+                        Thêm giai đoạn ngay
+                      </button>
+
+                      <button
+                        onClick={handleGetSuggestions}
+                        className="bg-gray-600/20 text-gray-300 border border-gray-600/30 hover:bg-gray-600/30 px-8 py-4 rounded-xl font-semibold transition-all duration-300 flex items-center gap-3"
+                      >
+                        <span>🔄</span>
+                        Tạo lại kế hoạch
+                      </button>
+                    </div>
+
+                    {/* Thông tin hướng dẫn */}
+                    <div className="mt-8 grid md:grid-cols-3 gap-4">
+                      <div className="bg-blue-500/10 rounded-lg p-4 border border-blue-500/20">
+                        <div className="text-3xl mb-2">🎯</div>
+                        <h5 className="text-blue-300 font-medium mb-1">
+                          Mục tiêu rõ ràng
+                        </h5>
+                        <p className="text-gray-400 text-sm">
+                          Chia nhỏ quá trình cai thuốc thành các mục tiêu có thể
+                          đạt được
+                        </p>
+                      </div>
+
+                      <div className="bg-green-500/10 rounded-lg p-4 border border-green-500/20">
+                        <div className="text-3xl mb-2">📈</div>
+                        <h5 className="text-green-300 font-medium mb-1">
+                          Theo dõi tiến độ
+                        </h5>
+                        <p className="text-gray-400 text-sm">
+                          Giám sát từng bước để duy trì động lực và điều chỉnh
+                          kế hoạch
+                        </p>
+                      </div>
+
+                      <div className="bg-purple-500/10 rounded-lg p-4 border border-purple-500/20">
+                        <div className="text-3xl mb-2">🏆</div>
+                        <h5 className="text-purple-300 font-medium mb-1">
+                          Thành công bền vững
+                        </h5>
+                        <p className="text-gray-400 text-sm">
+                          Xây dựng thói quen lành mạnh để duy trì kết quả lâu
+                          dài
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Gợi ý các giai đoạn phổ biến */}
+                    <div className="mt-6 p-4 bg-yellow-500/5 border border-yellow-500/10 rounded-lg">
+                      <h6 className="text-yellow-300 font-medium mb-2">
+                        💡 Gợi ý các giai đoạn phổ biến:
+                      </h6>
+                      <div className="text-yellow-200 text-sm space-y-1">
+                        <p>
+                          • <strong>Giai đoạn 1:</strong> Giảm dần số lượng
+                          thuốc lá (7-14 ngày)
+                        </p>
+                        <p>
+                          • <strong>Giai đoạn 2:</strong> Thay thế thói quen hút
+                          thuốc (7-10 ngày)
+                        </p>
+                        <p>
+                          • <strong>Giai đoạn 3:</strong> Ngừng hoàn toàn và
+                          củng cố (14-21 ngày)
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
@@ -1333,6 +1516,31 @@ function QuitPlan() {
                     </div>
                   )}
 
+                {/* ✅ THÊM MỚI: Validation cho minimum duration */}
+                {planFormData.customStages.length > 0 &&
+                  calculateTotalDays(planFormData.customStages) <= 15 && (
+                    <div className="mb-6 p-4 bg-orange-500/10 border border-orange-500/30 rounded-xl">
+                      <div className="flex items-start gap-3">
+                        <div className="text-orange-400 text-xl">⚠️</div>
+                        <div>
+                          <h5 className="text-orange-300 font-semibold mb-1">
+                            Kế hoạch quá ngắn
+                          </h5>
+                          <p className="text-orange-200 text-sm">
+                            Tổng thời gian kế hoạch hiện tại là{" "}
+                            <strong>
+                              {calculateTotalDays(planFormData.customStages)}{" "}
+                              ngày
+                            </strong>
+                            . Để đảm bảo hiệu quả, kế hoạch cai thuốc nên có ít
+                            nhất <strong>16 ngày</strong>. Hãy tăng thời gian
+                            hoặc thêm giai đoạn để có kế hoạch hiệu quả hơn.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                 {/* ✅ THÊM MỚI: Plan Summary Card cho Add Modal */}
                 {planFormData.customStages.length > 0 && (
                   <PlanSummaryCard
@@ -1372,10 +1580,33 @@ function QuitPlan() {
                   <div className="flex justify-between items-center mb-4">
                     <h4 className="text-lg font-semibold text-white">
                       Các giai đoạn tùy chỉnh
+                      <span className="text-sm font-normal text-blue-300 bg-blue-500/10 px-2 py-1 rounded-lg border border-blue-500/20 ml-2 inline-flex items-center gap-1">
+                        <span className="text-blue-400">ℹ️</span>
+                        Vui lòng cuộn xuống để xem nếu thêm giai đoạn
+                      </span>
                     </h4>
                     <button
                       onClick={addCustomStage}
-                      className="bg-green-500/20 text-green-300 border border-green-500/30 hover:bg-green-500/30 px-4 py-2 rounded-lg font-medium transition-all duration-300"
+                      disabled={
+                        !mySubscription ||
+                        calculateTotalDays(planFormData.customStages) >=
+                          mySubscription.daysRemaining
+                      }
+                      className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
+                        !mySubscription ||
+                        calculateTotalDays(planFormData.customStages) >=
+                          mySubscription.daysRemaining
+                          ? "bg-gray-500/20 text-gray-500 border border-gray-500/30 cursor-not-allowed"
+                          : "bg-green-500/20 text-green-300 border border-green-500/30 hover:bg-green-500/30"
+                      }`}
+                      title={
+                        !mySubscription
+                          ? "Không có thông tin gói đăng ký"
+                          : calculateTotalDays(planFormData.customStages) >=
+                            mySubscription.daysRemaining
+                          ? `Đã đạt giới hạn ${mySubscription.daysRemaining} ngày`
+                          : "Thêm giai đoạn mới"
+                      }
                     >
                       + Thêm giai đoạn
                     </button>
@@ -1407,7 +1638,7 @@ function QuitPlan() {
                               updateCustomStage(index, "title", e.target.value)
                             }
                             className="w-full bg-gray-700/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="Tiêu đề giai đoạn"
+                            placeholder="Tiêu đề giai đoạn (Bắt buộc)"
                           />
                           <textarea
                             value={stage.description}
@@ -1475,7 +1706,13 @@ function QuitPlan() {
                     disabled={
                       loading ||
                       !planFormData.reason.trim() ||
-                      planFormData.customStages.length === 0
+                      planFormData.customStages.length === 0 ||
+                      calculateTotalDays(planFormData.customStages) <= 15 ||
+                      planFormData.customStages.some(
+                        (stage) => !stage.title.trim()
+                      ) ||
+                      calculateTotalDays(planFormData.customStages) >
+                        mySubscription.daysRemaining
                     }
                     className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
@@ -1575,6 +1812,30 @@ function QuitPlan() {
                 </div>
               )}
 
+            {/* ✅ THÊM MỚI: Validation cho minimum duration */}
+            {planFormData.customStages.length > 0 &&
+              calculateTotalDays(planFormData.customStages) <= 15 && (
+                <div className="mb-6 p-4 bg-orange-500/10 border border-orange-500/30 rounded-xl">
+                  <div className="flex items-start gap-3">
+                    <div className="text-orange-400 text-xl">⚠️</div>
+                    <div>
+                      <h5 className="text-orange-300 font-semibold mb-1">
+                        Kế hoạch quá ngắn
+                      </h5>
+                      <p className="text-orange-200 text-sm">
+                        Tổng thời gian kế hoạch hiện tại là{" "}
+                        <strong>
+                          {calculateTotalDays(planFormData.customStages)} ngày
+                        </strong>
+                        . Để đảm bảo hiệu quả, kế hoạch cai thuốc nên có ít nhất{" "}
+                        <strong>16 ngày</strong>. Hãy tăng thời gian hoặc thêm
+                        giai đoạn để có kế hoạch hiệu quả hơn.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
             {/* ✅ THÊM MỚI: Plan Comparison Card cho Update Modal */}
             {planFormData.customStages.length > 0 && (
               <PlanComparisonCard
@@ -1607,10 +1868,33 @@ function QuitPlan() {
                 <div className="flex justify-between items-center mb-4">
                   <h4 className="text-lg font-semibold text-white">
                     Quản lý giai đoạn
+                    <span className="text-sm font-normal text-blue-300 bg-blue-500/10 px-2 py-1 rounded-lg border border-blue-500/20 ml-2 inline-flex items-center gap-1">
+                      <span className="text-blue-400">ℹ️</span>
+                      Vui lòng cuộn xuống để xem giai đoạn
+                    </span>
                   </h4>
                   <button
                     onClick={addCustomStage}
-                    className="bg-green-500/20 text-green-300 border border-green-500/30 hover:bg-green-500/30 px-4 py-2 rounded-lg font-medium transition-all duration-300"
+                    disabled={
+                      !mySubscription ||
+                      calculateTotalDays(planFormData.customStages) >=
+                        mySubscription.daysRemaining
+                    }
+                    className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
+                      !mySubscription ||
+                      calculateTotalDays(planFormData.customStages) >=
+                        mySubscription.daysRemaining
+                        ? "bg-gray-500/20 text-gray-500 border border-gray-500/30 cursor-not-allowed"
+                        : "bg-green-500/20 text-green-300 border border-green-500/30 hover:bg-green-500/30"
+                    }`}
+                    title={
+                      !mySubscription
+                        ? "Không có thông tin gói đăng ký"
+                        : calculateTotalDays(planFormData.customStages) >=
+                          mySubscription.daysRemaining
+                        ? `Đã đạt giới hạn ${mySubscription.daysRemaining} ngày`
+                        : "Thêm giai đoạn mới"
+                    }
                   >
                     + Thêm giai đoạn
                   </button>
@@ -1831,7 +2115,7 @@ function QuitPlan() {
                               ? "bg-gray-700/30 border-gray-600/30 cursor-not-allowed text-gray-400"
                               : "bg-gray-700/50 border-gray-600/30 focus:ring-blue-500"
                           }`}
-                          placeholder="Tiêu đề giai đoạn"
+                          placeholder="Tiêu đề giai đoạn (Bắt buộc)"
                         />
 
                         {/* Description textarea */}
@@ -1979,7 +2263,14 @@ function QuitPlan() {
                   disabled={
                     loading ||
                     !planFormData.reason.trim() ||
-                    planFormData.customStages.length === 0
+                    planFormData.customStages.length === 0 ||
+                    calculateTotalDays(planFormData.customStages) <= 15 ||
+                    planFormData.customStages.some(
+                      (stage) => !stage.title.trim()
+                    ) ||
+                    !hasChanges() ||
+                    calculateTotalDays(planFormData.customStages) >
+                      mySubscription.daysRemaining
                   }
                   className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
