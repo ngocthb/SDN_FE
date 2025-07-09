@@ -340,6 +340,230 @@ function QuitPlan() {
     );
   }
 
+  // Thêm các hàm tính toán ngày dự kiến hoàn thành
+  const calculateExpectedCompletionDate = (stages, isUpdate = false) => {
+    const totalDays = calculateTotalDays(stages);
+    if (totalDays === 0) return null;
+
+    // Nếu là update, dùng startDate của kế hoạch hiện tại
+    // Nếu là add mới, dùng ngày hiện tại
+    const startDate =
+      isUpdate && currentPlan?.plan?.startDate
+        ? new Date(currentPlan.plan.startDate)
+        : new Date();
+
+    const completionDate = new Date(startDate);
+    completionDate.setDate(startDate.getDate() + totalDays);
+
+    return completionDate;
+  };
+
+  // Hàm format ngày dự kiến
+  const formatExpectedDate = (date) => {
+    if (!date) return "Chưa xác định";
+
+    const options = {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    };
+
+    return date.toLocaleDateString("vi-VN", options);
+  };
+
+  // Component hiển thị thông tin kế hoạch
+  const PlanSummaryCard = ({
+    stages,
+    title = "Tổng quan kế hoạch",
+    isUpdate = false,
+  }) => {
+    const totalDays = calculateTotalDays(stages);
+    const expectedDate = calculateExpectedCompletionDate(stages, isUpdate);
+
+    if (totalDays === 0) return null;
+
+    // Ngày bắt đầu
+    const startDate =
+      isUpdate && currentPlan?.plan?.startDate
+        ? new Date(currentPlan.plan.startDate)
+        : new Date();
+
+    return (
+      <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-xl p-4 border border-blue-500/30 mb-6">
+        <h5 className="text-blue-300 font-semibold mb-3 flex items-center gap-2">
+          <span>📊</span>
+          {title}
+        </h5>
+        <div className="grid md:grid-cols-2 gap-4 text-sm">
+          <div className="flex items-center justify-between">
+            <span className="text-gray-400">Tổng số giai đoạn:</span>
+            <span className="text-white font-medium">{stages.length}</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-gray-400">Tổng thời gian:</span>
+            <span className="text-white font-medium">{totalDays} ngày</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-gray-400">
+              {isUpdate ? "Ngày bắt đầu gốc:" : "Bắt đầu:"}
+            </span>
+            <span className="text-white font-medium">
+              {formatDate(startDate)}
+            </span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-gray-400">Dự kiến hoàn thành:</span>
+            <span className="text-green-400 font-medium">
+              {formatExpectedDate(expectedDate)}
+            </span>
+          </div>
+        </div>
+
+        {/* Progress timeline visual */}
+        <div className="mt-4 p-3 bg-black/20 rounded-lg">
+          <div className="flex items-center justify-between text-xs text-gray-400 mb-2">
+            <span>{isUpdate ? "Ngày bắt đầu" : "Hôm nay"}</span>
+            <span>{totalDays} ngày</span>
+            <span>Hoàn thành</span>
+          </div>
+          <div className="w-full bg-gray-700 rounded-full h-2">
+            <div className="bg-gradient-to-r from-blue-500 to-green-500 h-2 rounded-full w-full animate-pulse"></div>
+          </div>
+          <div className="flex justify-between mt-1 text-xs text-gray-500">
+            <span>{formatDate(startDate)}</span>
+            <span>{formatExpectedDate(expectedDate)}</span>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Component so sánh kế hoạch (chỉ cho Update Modal)
+  const PlanComparisonCard = ({ currentStages, newStages }) => {
+    const currentTotal = calculateTotalDays(currentStages || []);
+    const newTotal = calculateTotalDays(newStages);
+
+    // Dùng startDate của kế hoạch hiện tại
+    const startDate = currentPlan?.plan?.startDate
+      ? new Date(currentPlan.plan.startDate)
+      : new Date();
+
+    const currentExpected = calculateExpectedCompletionDate(
+      currentStages || [],
+      true
+    );
+    const newExpected = calculateExpectedCompletionDate(newStages, true);
+
+    const daysDifference = newTotal - currentTotal;
+
+    return (
+      <div className="bg-gradient-to-r from-orange-500/10 to-blue-500/10 rounded-xl p-4 border border-orange-500/30 mb-6">
+        <h5 className="text-orange-300 font-semibold mb-3 flex items-center gap-2">
+          <span>🔄</span>
+          So sánh thay đổi
+        </h5>
+
+        <div className="grid md:grid-cols-2 gap-6">
+          {/* Kế hoạch hiện tại */}
+          <div className="space-y-2">
+            <h6 className="text-gray-300 font-medium">Kế hoạch hiện tại:</h6>
+            <div className="text-sm space-y-1">
+              <div className="flex justify-between">
+                <span className="text-gray-400">Tổng thời gian:</span>
+                <span className="text-white">{currentTotal} ngày</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-400">Ngày bắt đầu:</span>
+                <span className="text-white text-xs">
+                  {formatDate(startDate)}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-400">Dự kiến hoàn thành:</span>
+                <span className="text-white text-xs">
+                  {formatExpectedDate(currentExpected)}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Kế hoạch mới */}
+          <div className="space-y-2">
+            <h6 className="text-blue-300 font-medium">Sau khi cập nhật:</h6>
+            <div className="text-sm space-y-1">
+              <div className="flex justify-between">
+                <span className="text-gray-400">Tổng thời gian:</span>
+                <span
+                  className={`font-medium ${
+                    daysDifference > 0
+                      ? "text-orange-400"
+                      : daysDifference < 0
+                      ? "text-green-400"
+                      : "text-white"
+                  }`}
+                >
+                  {newTotal} ngày
+                  {daysDifference !== 0 && (
+                    <span className="text-xs ml-1">
+                      ({daysDifference > 0 ? "+" : ""}
+                      {daysDifference})
+                    </span>
+                  )}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-400">Ngày bắt đầu:</span>
+                <span className="text-blue-300 text-xs">
+                  {formatDate(startDate)} (giữ nguyên)
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-400">Dự kiến hoàn thành:</span>
+                <span className="text-blue-300 text-xs">
+                  {formatExpectedDate(newExpected)}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Thông báo thay đổi */}
+        {daysDifference !== 0 && (
+          <div
+            className={`mt-3 p-2 rounded-lg text-xs ${
+              daysDifference > 0
+                ? "bg-orange-500/10 border border-orange-500/30 text-orange-300"
+                : "bg-green-500/10 border border-green-500/30 text-green-300"
+            }`}
+          >
+            {daysDifference > 0
+              ? `⚠️ Kế hoạch sẽ dài hơn ${daysDifference} ngày so với hiện tại`
+              : `✅ Kế hoạch sẽ ngắn hơn ${Math.abs(
+                  daysDifference
+                )} ngày so với hiện tại`}
+          </div>
+        )}
+
+        {/* Hiển thị ngày hoàn thành thay đổi */}
+        {currentExpected && newExpected && daysDifference !== 0 && (
+          <div className="mt-2 p-2 bg-blue-500/10 border border-blue-500/30 rounded-lg text-xs">
+            <p className="text-blue-300">
+              📅 Ngày hoàn thành sẽ thay đổi từ{" "}
+              <span className="font-medium">
+                {formatExpectedDate(currentExpected)}
+              </span>{" "}
+              thành{" "}
+              <span className="font-medium">
+                {formatExpectedDate(newExpected)}
+              </span>
+            </p>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-dark-900 via-purple-900/20 to-pink-900/20">
       <Navbar />
@@ -1108,6 +1332,15 @@ function QuitPlan() {
                       </div>
                     </div>
                   )}
+
+                {/* ✅ THÊM MỚI: Plan Summary Card cho Add Modal */}
+                {planFormData.customStages.length > 0 && (
+                  <PlanSummaryCard
+                    stages={planFormData.customStages}
+                    title="Kế hoạch tùy chỉnh của bạn"
+                    isUpdate={false} // Add modal = false
+                  />
+                )}
                 <div className="text-center mb-8">
                   <h3 className="text-3xl font-bold text-white mb-4">
                     🛠️ Tùy chỉnh kế hoạch
@@ -1341,6 +1574,14 @@ function QuitPlan() {
                   </div>
                 </div>
               )}
+
+            {/* ✅ THÊM MỚI: Plan Comparison Card cho Update Modal */}
+            {planFormData.customStages.length > 0 && (
+              <PlanComparisonCard
+                currentStages={currentStage?.allStagesWithProgress || []}
+                newStages={planFormData.customStages}
+              />
+            )}
 
             <div className="space-y-6">
               {/* Reason Section */}
