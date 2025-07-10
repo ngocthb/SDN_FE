@@ -847,6 +847,95 @@ function QuitPlan() {
                   </div>
                 </div>
 
+                {/* ✅ THÊM MỚI: Banner hoàn thành kế hoạch */}
+                {currentPlan.progress &&
+                  currentPlan.progress.progressPercentage >= 100 && (
+                    <div className="bg-gradient-to-r from-green-500/20 to-yellow-500/20 border-2 border-green-500/50 rounded-2xl p-6 mb-6 animate-bounce">
+                      <div className="text-center">
+                        <div className="text-6xl mb-4 animate-pulse">🎉</div>
+                        <h3 className="text-3xl font-bold bg-gradient-to-r from-green-400 to-yellow-400 bg-clip-text text-transparent mb-3">
+                          Chúc mừng! Bạn đã hoàn thành kế hoạch cai thuốc!
+                        </h3>
+                        <p className="text-green-300 text-lg mb-4">
+                          Bạn đã vượt qua tất cả các giai đoạn và đạt được mục
+                          tiêu cai thuốc. Đây là một thành tựu tuyệt vời!
+                        </p>
+
+                        <div className="grid md:grid-cols-3 gap-4 mb-6">
+                          <div className="bg-green-500/10 rounded-xl p-4 border border-green-500/30">
+                            <div className="text-2xl mb-2">🏆</div>
+                            <h4 className="text-green-300 font-semibold text-sm mb-1">
+                              Hoàn thành
+                            </h4>
+                            <p className="text-white text-lg font-bold">
+                              {currentPlan.progress.totalDays} ngày
+                            </p>
+                          </div>
+                          <div className="bg-blue-500/10 rounded-xl p-4 border border-blue-500/30">
+                            <div className="text-2xl mb-2">📅</div>
+                            <h4 className="text-blue-300 font-semibold text-sm mb-1">
+                              Ngày hoàn thành
+                            </h4>
+                            <p className="text-white text-sm font-bold">
+                              {formatDate(new Date())}
+                            </p>
+                          </div>
+                          <div className="bg-purple-500/10 rounded-xl p-4 border border-purple-500/30">
+                            <div className="text-2xl mb-2">💪</div>
+                            <h4 className="text-purple-300 font-semibold text-sm mb-1">
+                              Kỷ lục
+                            </h4>
+                            <p className="text-white text-lg font-bold">100%</p>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                          <button
+                            onClick={() => {
+                              // Có thể thêm logic để tạo kế hoạch duy trì
+                              toast.success(
+                                "Chúc mừng bạn đã hoàn thành kế hoạch cai thuốc!"
+                              );
+                            }}
+                            className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-300 hover:scale-105 flex items-center gap-2 shadow-lg"
+                          >
+                            <span>🎯</span>
+                            Xem thành tích
+                          </button>
+                          <button
+                            onClick={handleGetSuggestions}
+                            className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-300 hover:scale-105 flex items-center gap-2"
+                          >
+                            <span>🔄</span>
+                            Tạo kế hoạch mới
+                          </button>
+                        </div>
+
+                        {/* Thông điệp động lực */}
+                        <div className="mt-6 p-4 bg-gradient-to-r from-yellow-500/10 to-green-500/10 border border-yellow-500/30 rounded-xl">
+                          <div className="flex items-start gap-3">
+                            <div className="text-yellow-400 text-xl">✨</div>
+                            <div className="text-left">
+                              <h5 className="text-yellow-300 font-semibold mb-2">
+                                Thông điệp từ chúng tôi
+                              </h5>
+                              <p className="text-gray-300 text-sm leading-relaxed">
+                                Bạn đã chứng minh được ý chí và quyết tâm mạnh
+                                mẽ. Hãy tiếp tục duy trì lối sống khỏe mạnh và
+                                nhớ rằng chúng tôi luôn ở đây để hỗ trợ bạn
+                                trong hành trình này.
+                                <strong className="text-green-400">
+                                  {" "}
+                                  Bạn thật tuyệt vời!
+                                </strong>
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                 {/* THÊM MỚI: Progress Bar cho timeline */}
                 {currentPlan.progress && (
                   <div className="mt-4">
@@ -875,49 +964,127 @@ function QuitPlan() {
                 )}
               </div>
 
-              {/* Progress Overview */}
+              {/* ✅ SỬA LẠI: Progress Overview - Thêm hiệu ứng đặc biệt khi hoàn thành */}
               {currentPlan.progress && (
                 <div className="grid md:grid-cols-3 gap-6 mb-8">
-                  <div className="bg-blue-500/10 rounded-xl p-6 border border-blue-500/20">
+                  <div
+                    className={`rounded-xl p-6 border transition-all duration-500 ${
+                      currentPlan.progress.progressPercentage >= 100
+                        ? "bg-gradient-to-br from-blue-500/20 to-green-500/20 border-green-500/50 shadow-lg shadow-green-500/25"
+                        : "bg-blue-500/10 border-blue-500/20"
+                    }`}
+                  >
                     <div className="text-center">
-                      <h3 className="text-lg font-semibold text-blue-300 mb-2">
+                      <h3
+                        className={`text-lg font-semibold mb-2 ${
+                          currentPlan.progress.progressPercentage >= 100
+                            ? "text-green-300"
+                            : "text-blue-300"
+                        }`}
+                      >
                         Ngày đã trải qua
                       </h3>
-                      <p className="text-3xl font-bold text-white">
+                      <p
+                        className={`text-3xl font-bold transition-colors duration-500 ${
+                          currentPlan.progress.progressPercentage >= 100
+                            ? "text-green-400"
+                            : "text-white"
+                        }`}
+                      >
                         {currentPlan.progress.daysPassed}
                       </p>
                       <span className="text-gray-400 text-sm">ngày</span>
+                      {currentPlan.progress.progressPercentage >= 100 && (
+                        <div className="mt-2 text-green-400 text-sm animate-pulse">
+                          ✅ Hoàn thành!
+                        </div>
+                      )}
                     </div>
                   </div>
 
-                  <div className="bg-green-500/10 rounded-xl p-6 border border-green-500/20">
+                  <div
+                    className={`rounded-xl p-6 border transition-all duration-500 ${
+                      currentPlan.progress.progressPercentage >= 100
+                        ? "bg-gradient-to-br from-green-500/20 to-yellow-500/20 border-green-500/50 shadow-lg shadow-green-500/25"
+                        : "bg-green-500/10 border-green-500/20"
+                    }`}
+                  >
                     <div className="text-center">
                       <h3 className="text-lg font-semibold text-green-300 mb-2">
                         Tiến độ
                       </h3>
-                      <p className="text-3xl font-bold text-white">
+                      <p
+                        className={`text-3xl font-bold transition-colors duration-500 ${
+                          currentPlan.progress.progressPercentage >= 100
+                            ? "text-yellow-400"
+                            : "text-white"
+                        }`}
+                      >
                         {currentPlan.progress.progressPercentage}%
                       </p>
                       <div className="w-full bg-gray-700 rounded-full h-2 mt-2">
                         <div
-                          className="bg-green-500 h-2 rounded-full transition-all duration-300"
+                          className={`h-2 rounded-full transition-all duration-1000 ${
+                            currentPlan.progress.progressPercentage >= 100
+                              ? "bg-gradient-to-r from-green-500 to-yellow-500 shadow-lg shadow-green-500/50"
+                              : "bg-green-500"
+                          }`}
                           style={{
-                            width: `${currentPlan.progress.progressPercentage}%`,
+                            width: `${Math.min(
+                              currentPlan.progress.progressPercentage,
+                              100
+                            )}%`,
                           }}
                         ></div>
                       </div>
+                      {currentPlan.progress.progressPercentage >= 100 && (
+                        <div className="mt-2 text-yellow-400 text-sm animate-pulse">
+                          🎉 100% hoàn thành!
+                        </div>
+                      )}
                     </div>
                   </div>
 
-                  <div className="bg-orange-500/10 rounded-xl p-6 border border-orange-500/20">
+                  <div
+                    className={`rounded-xl p-6 border transition-all duration-500 ${
+                      currentPlan.progress.progressPercentage >= 100
+                        ? "bg-gradient-to-br from-orange-500/20 to-purple-500/20 border-purple-500/50 shadow-lg shadow-purple-500/25"
+                        : "bg-orange-500/10 border-orange-500/20"
+                    }`}
+                  >
                     <div className="text-center">
-                      <h3 className="text-lg font-semibold text-orange-300 mb-2">
-                        Còn lại
+                      <h3
+                        className={`text-lg font-semibold mb-2 ${
+                          currentPlan.progress.progressPercentage >= 100
+                            ? "text-purple-300"
+                            : "text-orange-300"
+                        }`}
+                      >
+                        {currentPlan.progress.progressPercentage >= 100
+                          ? "Thành tích"
+                          : "Còn lại"}
                       </h3>
-                      <p className="text-3xl font-bold text-white">
-                        {currentPlan.progress.remainingDays}
+                      <p
+                        className={`text-3xl font-bold transition-colors duration-500 ${
+                          currentPlan.progress.progressPercentage >= 100
+                            ? "text-purple-400"
+                            : "text-white"
+                        }`}
+                      >
+                        {currentPlan.progress.progressPercentage >= 100
+                          ? "🏆"
+                          : currentPlan.progress.remainingDays}
                       </p>
-                      <span className="text-gray-400 text-sm">ngày</span>
+                      <span className="text-gray-400 text-sm">
+                        {currentPlan.progress.progressPercentage >= 100
+                          ? "Hoàn thành!"
+                          : "ngày"}
+                      </span>
+                      {currentPlan.progress.progressPercentage >= 100 && (
+                        <div className="mt-2 text-purple-400 text-sm animate-pulse">
+                          🌟 Xuất sắc!
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -1659,16 +1826,29 @@ function QuitPlan() {
                             <input
                               type="number"
                               value={stage.daysToComplete}
-                              onChange={(e) =>
+                              onChange={(e) => {
+                                const value = parseInt(e.target.value);
+                                // ✅ Validation chặt chẽ: đảm bảo luôn >= 1
+                                const validValue =
+                                  !isNaN(value) && value >= 1 ? value : 1;
                                 updateCustomStage(
                                   index,
                                   "daysToComplete",
-                                  parseInt(e.target.value) || 1
-                                )
-                              }
+                                  validValue
+                                );
+                              }}
                               className="bg-gray-700/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white w-20 focus:outline-none focus:ring-2 focus:ring-blue-500"
                               min="1"
                               max="365"
+                              onBlur={(e) => {
+                                // ✅ Double-check khi user rời khỏi input
+                                if (
+                                  !e.target.value ||
+                                  parseInt(e.target.value) < 1
+                                ) {
+                                  updateCustomStage(index, "daysToComplete", 1);
+                                }
+                              }}
                             />
                           </div>
                         </div>
@@ -2185,13 +2365,17 @@ function QuitPlan() {
                           <input
                             type="number"
                             value={stage.daysToComplete}
-                            onChange={(e) =>
+                            onChange={(e) => {
+                              const value = parseInt(e.target.value);
+                              // ✅ Validation chặt chẽ: đảm bảo luôn >= 1
+                              const validValue =
+                                !isNaN(value) && value >= 1 ? value : 1;
                               updateCustomStage(
                                 index,
                                 "daysToComplete",
-                                parseInt(e.target.value) || 1
-                              )
-                            }
+                                validValue
+                              );
+                            }}
                             disabled={
                               (stage._id &&
                                 currentStage?.allStagesWithProgress?.find(
@@ -2215,6 +2399,15 @@ function QuitPlan() {
                             }`}
                             min="1"
                             max="365"
+                            onBlur={(e) => {
+                              // ✅ Double-check khi user rời khỏi input
+                              if (
+                                !e.target.value ||
+                                parseInt(e.target.value) < 1
+                              ) {
+                                updateCustomStage(index, "daysToComplete", 1);
+                              }
+                            }}
                           />
                           {stage._id &&
                             currentStage?.allStagesWithProgress?.find(
