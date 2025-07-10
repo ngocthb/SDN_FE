@@ -40,6 +40,10 @@ function QuitPlan() {
 
   const { smokingStatus } = useSelector((state) => state.smokingStatus);
 
+  const { progressLogs } = useSelector((state) => state.progressLog);
+
+  console.log("progressLogs", progressLogs);
+
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [onboardingStep, setOnboardingStep] = useState(1);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
@@ -808,12 +812,17 @@ function QuitPlan() {
                   >
                     Chỉnh sửa
                   </button>
-                  <button
-                    onClick={handleCancelPlan}
-                    className="bg-red-500/20 text-red-300 border border-red-500/30 hover:bg-red-500/30 px-4 py-2 rounded-lg font-medium transition-all duration-300"
-                  >
-                    Hủy kế hoạch
-                  </button>
+                  {(!progressLogs ||
+                    !progressLogs.some(
+                      (log) => log.quitPlanId._id === currentPlan.plan._id
+                    )) && (
+                    <button
+                      onClick={handleCancelPlan}
+                      className="bg-red-500/20 text-red-300 border border-red-500/30 hover:bg-red-500/30 px-4 py-2 rounded-lg font-medium transition-all duration-300"
+                    >
+                      Hủy kế hoạch
+                    </button>
+                  )}
                 </div>
               </div>
 
