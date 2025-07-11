@@ -161,7 +161,14 @@ function Homepage() {
     dispatch(fetchLeaderboard());
   }, [dispatch]);
 
-  const features = [
+  const { hasActiveSubscription } = useSelector((state) => state.subscription);
+  // const { user } = useSelector((state) => state.user);
+  const token = localStorage.getItem("token");
+  const userName = localStorage.getItem("userName");
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [selectedContact, setSelectedContact] = useState(null);
+  // const [isInitialLoad, setIsInitialLoad] = useState(true);
+const features = [
     {
       title: "Theo Dõi Tiến Trình",
       description:
@@ -204,10 +211,33 @@ function Homepage() {
     },
   ];
 
+
+  // const shouldShowChatButton = useMemo(() => {
+  //   if (isInitialLoad && subscriptionLoading) {
+  //     return false;
+  //   }
+  //   return user && hasActiveSubscription;
+  // }, [user, hasActiveSubscription, isInitialLoad, subscriptionLoading]);
+
+  useEffect(() => {
+    if (token) {
+      dispatch(getMySubscription());
+    }
+  }, [dispatch, token]);
+
+  const handleChatClick = (contact) => {
+    setSelectedContact(contact);
+    setIsChatOpen(true);
+  };
+
+  const handleCloseChatPopup = () => {
+    setIsChatOpen(false);
+    setSelectedContact(null);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-dark-900 via-purple-900/20 to-pink-900/20 text-white">
       <Navbar />
-
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* === Hero Section === */}
         <section className="text-center py-20 animate-fade-in">
@@ -284,8 +314,20 @@ function Homepage() {
               Tham Gia Ngay
             </Link>
           </div>
+
         </section>
+        {/* Floating Chat Button */}
+        {token && hasActiveSubscription && (
+          <button
+            onClick={() => handleChatClick(recentChats[0])}
+            className="fixed bottom-6 right-6 w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white rounded-full shadow-2xl hover:scale-110 transition-all duration-300 flex items-center justify-center text-3xl z-40 animate-float glow-effect"
+          >
+            <IoChatbubblesSharp />
+          </button>
+        )}
       </main>
+      <ChatPopup isOpen={isChatOpen} onClose={handleCloseChatPopup} />
+
     </div>
   );
 }
