@@ -8,7 +8,7 @@ export const fetchMemberships = createAsyncThunk(
   "membership/fetchMemberships",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await api.get("/membership");
+      const response = await api.get("membership");
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
@@ -21,7 +21,7 @@ export const createMembershipOrder = createAsyncThunk(
   "membership/createOrder",
   async ({ userId, membershipId, mode = "register" }, { rejectWithValue }) => {
     try {
-      const res = await api.post("/payMembership", {
+      const res = await api.post("payMembership", {
         userId,
         membershipId,
         mode,
@@ -38,7 +38,7 @@ export const confirmMembershipPayment = createAsyncThunk(
   "membership/confirmPayment",
   async (vnpayData, { rejectWithValue }) => {
     try {
-      const res = await api.post("/payMembership/confirm-payment", vnpayData);
+      const res = await api.post("payMembership/confirm-payment", vnpayData);
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
@@ -51,7 +51,7 @@ export const cancelMySubscription = createAsyncThunk(
   "membership/cancelSubscription",
   async (subscriptionId, { rejectWithValue }) => {
     try {
-      const response = await api.put(`/subscription/cancel/${subscriptionId}`);
+      const response = await api.put(`subscription/cancel/${subscriptionId}`);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
@@ -64,7 +64,7 @@ export const extendSubscription = createAsyncThunk(
   "membership/extendSubscription",
   async ({ subscriptionId }, { rejectWithValue }) => {
     try {
-      const res = await api.put(`/subscription/extend/${subscriptionId}`);
+      const res = await api.put(`subscription/extend/${subscriptionId}`);
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
