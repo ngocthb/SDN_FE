@@ -52,20 +52,19 @@ const RootRouter = () => {
           </AuthRoute>
         }
       />
-      
-      <Route
-        path="/reset-password"
-        element={
-          <AuthRoute>
-            <ResetPassword />
-          </AuthRoute>
-        }
-      />
       <Route
         path="/check-reset-otp"
         element={
           <AuthRoute>
             <CheckResetOTP />
+          </AuthRoute>
+        }
+      />
+      <Route
+        path="/reset-password"
+        element={
+          <AuthRoute>
+            <ResetPassword />
           </AuthRoute>
         }
       />
@@ -78,12 +77,13 @@ const RootRouter = () => {
           </CoachRoute>
         }
       />
-       <Route path="profile" element={
-        <PrivateRoute>
-          <Profile />
-        </PrivateRoute>
-
-      }
+      <Route
+        path="/profile"
+        element={
+          <PrivateRoute>
+            <Profile />
+          </PrivateRoute>
+        }
       />
       <Route
         path="/admin/memberships"

@@ -43,12 +43,17 @@ function Login() {
       toast.error(result.payload);
     } else {
       toast.success('Logged in successfully!');
-      localStorage.setItem("token", result.payload.token);
-
+      const role = localStorage.getItem('role');
       if (!result.payload.status) {
         navigate('/verify-otp', { state: { email: formData.email } });
       } else {
-        navigate('/home');
+        if (role === 'admin') {
+          navigate('/admin/memberships');
+        } else if (role === 'coach') {
+          navigate('/messenger');
+        } else {
+          navigate('/home');
+        }
       }
     }
 

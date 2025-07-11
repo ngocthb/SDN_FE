@@ -16,6 +16,13 @@ function CheckResetOTP() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (!email) {
+      toast.error('Unauthorized access. Please use Forgot Password to proceed.');
+      navigate('/forgot-password');
+    }
+  }, [email]);
+
+  useEffect(() => {
     let interval;
     if (!isToastShown) {
       interval = setInterval(() => {
@@ -36,22 +43,22 @@ function CheckResetOTP() {
   }, [isToastShown]);
 
   const handleChange = (index, value) => {
-  if (!/^\d*$/.test(value)) return;
+    if (!/^\d*$/.test(value)) return;
 
-  const newOtp = [...otp];
-  newOtp[index] = value.slice(0, 1);
-  setOtp(newOtp);
+    const newOtp = [...otp];
+    newOtp[index] = value.slice(0, 1);
+    setOtp(newOtp);
 
-  if (value && index < otp.length - 1) {
-    const nextInput = document.getElementById(`otp-${index + 1}`);
-    if (nextInput) nextInput.focus();
-  }
+    if (value && index < otp.length - 1) {
+      const nextInput = document.getElementById(`otp-${index + 1}`);
+      if (nextInput) nextInput.focus();
+    }
 
-  if (!value && index > 0) {
-    const prevInput = document.getElementById(`otp-${index - 1}`);
-    if (prevInput) prevInput.focus();
-  }
-};
+    if (!value && index > 0) {
+      const prevInput = document.getElementById(`otp-${index - 1}`);
+      if (prevInput) prevInput.focus();
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();

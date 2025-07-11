@@ -66,6 +66,7 @@ function AdminEditMembershipForm({ membership, onClose }) {
               type="number"
               name="duration"
               value={formData.duration}
+              min={1}
               onChange={handleChange}
               className="input-glass w-full"
               required

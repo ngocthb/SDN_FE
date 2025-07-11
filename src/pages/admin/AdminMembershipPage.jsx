@@ -22,7 +22,7 @@ function AdminMembershipPage() {
       if (response.data.status === "OK") {
         const memberships = response.data.data.map((membership) => ({
           ...membership,
-          status: membership.isDeleted ? "Inactive" : "Active", 
+          status: membership.isDeleted ? "Inactive" : "Active",
         }));
         setMemberships(memberships);
       } else {
@@ -59,8 +59,8 @@ function AdminMembershipPage() {
       toast.success("Membership deleted successfully!");
       handleCloseDeleteModal();
     } catch (error) {
-      console.error("Error deleting membership:", error);
-      toast.error("Failed to delete membership. Please try again.");
+      console.log("Error deleting membership:", error);
+      toast.error(error.response.data.message);
     }
   };
 
@@ -91,8 +91,8 @@ function AdminMembershipPage() {
       toast.success("Membership restored successfully!");
       handleCloseRestoreModal();
     } catch (error) {
-      console.error("Error restoring membership:", error);
-      toast.error("Failed to restore membership. Please try again.");
+      console.log("Error restoring membership:", error);
+      toast.error(error.response.data.message);
     }
   };
 
@@ -130,7 +130,9 @@ function AdminMembershipPage() {
                     memberships.map((membership) => (
                       <tr key={membership._id} className="border-b border-white/10">
                         <td className="py-2">{membership.name}</td>
-                        <td className="py-2">{membership.price.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 })}</td>
+                        <td className="py-2">
+                          {membership.price.toLocaleString('vi-VN')} VND
+                        </td>
                         <td className="py-2">{membership.duration} days</td>
                         <td className={`py-2 font-bold ${membership.status === 'Active' ? 'text-green-400' : 'text-red-400'}`}>{membership.status}</td>
                         <td className="py-2 flex gap-4">

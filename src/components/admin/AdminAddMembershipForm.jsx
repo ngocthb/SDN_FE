@@ -70,6 +70,7 @@ function AdminAddMembershipForm({ onClose }) {
             <input
               type="number"
               name="duration"
+              min={1}
               value={formData.duration}
               onChange={handleChange}
               className="input-glass w-full"

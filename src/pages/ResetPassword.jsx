@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import Navbar from '../components/Navbar';
 import { useDispatch } from 'react-redux';
@@ -16,6 +16,13 @@ function ResetPassword() {
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+   useEffect(() => {
+    if (!email || !otp) {
+      toast.error('Unauthorized access. Please verify your OTP to proceed.');
+      navigate('/forgot-password');
+    }
+  }, [email, otp]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });

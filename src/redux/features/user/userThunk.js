@@ -8,6 +8,7 @@ export const fetchLoginThunk = createAsyncThunk(
             const res = await api.post('user/login', credentials);
             console.log('Login response:', res);
             const token = res.data.data.token;
+            console.log(token)
             localStorage.setItem('userId', res.data.data.user._id);
             localStorage.setItem('userName', res.data.data.user.name);
             localStorage.setItem('userAvatar', res.data.data.user.picture);
