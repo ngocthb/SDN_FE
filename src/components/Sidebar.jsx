@@ -29,8 +29,8 @@ const Sidebar = () => {
   ];
 
   return (
-    <div className="w-64 h-screen nav-glass flex flex-col shadow-lg">
-      <nav className="flex-1 p-4 space-y-2">
+    <div className="w-64 h-screen  flex flex-col  ">
+      <nav className=" flex-1 p-4 space-y-2">
         {menuItems.map((item) => (
           <NavLink
             key={item.name}
