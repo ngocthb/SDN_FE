@@ -1,6 +1,6 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
-import api from "../../config/axios";
+import api from "../../../config/axios";
 import { toast } from "react-toastify";
 
 function AdminMembershipForm({ membership, onClose }) {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   BarChart,
   Bar,
@@ -23,21 +23,11 @@ import {
   IoShieldCheckmarkOutline,
   IoBriefcaseOutline,
   IoCheckmarkCircleOutline,
-  IoCloseCircleOutline,
   IoTrendingUpOutline,
-  IoTrendingDownOutline,
-  IoCalendarOutline,
   IoDownloadOutline,
-  IoFilterOutline,
-  IoSearchOutline,
-  IoEyeOutline,
-  IoCreateOutline,
-  IoTrashOutline,
-  IoTimeOutline,
 } from "react-icons/io5";
-import AdminNavbar from "../../../components/admin/AdminNavbar";
-import Sidebar from "../../../components/Sidebar";
 import api from "../../../config/axios";
+import AdminLayout from "../../../layouts/admin/AdminLayout";
 
 const AdminDashboard = () => {
   const [statistics, setStatistics] = useState(null);
@@ -146,92 +136,92 @@ const AdminDashboard = () => {
   // Transform data for charts
   const roleData = statistics
     ? [
-        { name: "Users", value: statistics.byRole.users, color: COLORS[0] },
-        { name: "Coaches", value: statistics.byRole.coaches, color: COLORS[1] },
-        { name: "Admins", value: statistics.byRole.admins, color: COLORS[2] },
-      ]
+      { name: "Users", value: statistics.byRole.users, color: COLORS[0] },
+      { name: "Coaches", value: statistics.byRole.coaches, color: COLORS[1] },
+      { name: "Admins", value: statistics.byRole.admins, color: COLORS[2] },
+    ]
     : [];
 
   const genderData = statistics
     ? [
-        { name: "Male", value: statistics.byGender.male, color: COLORS[0] },
-        { name: "Female", value: statistics.byGender.female, color: COLORS[1] },
-        {
-          name: "Unknown",
-          value: statistics.byGender.unknown,
-          color: COLORS[2],
-        },
-      ]
+      { name: "Male", value: statistics.byGender.male, color: COLORS[0] },
+      { name: "Female", value: statistics.byGender.female, color: COLORS[1] },
+      {
+        name: "Unknown",
+        value: statistics.byGender.unknown,
+        color: COLORS[2],
+      },
+    ]
     : [];
 
   const trendData = statistics
     ? statistics.registrationTrend.map((item) => ({
-        date: new Date(item._id).toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-        }),
-        registrations: item.count,
-      }))
+      date: new Date(item._id).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      }),
+      registrations: item.count,
+    }))
     : [];
 
   // Membership data for charts
   const subscriptionStatusData = membershipStats
     ? [
-        {
-          name: "Active",
-          value: membershipStats.statusDistribution.active,
-          color: COLORS[0],
-        },
-        {
-          name: "Expired",
-          value: membershipStats.statusDistribution.expired,
-          color: COLORS[1],
-        },
-        {
-          name: "Cancelled",
-          value: membershipStats.statusDistribution.cancelled,
-          color: COLORS[2],
-        },
-      ].filter((item) => item.value > 0)
+      {
+        name: "Active",
+        value: membershipStats.statusDistribution.active,
+        color: COLORS[0],
+      },
+      {
+        name: "Expired",
+        value: membershipStats.statusDistribution.expired,
+        color: COLORS[1],
+      },
+      {
+        name: "Cancelled",
+        value: membershipStats.statusDistribution.cancelled,
+        color: COLORS[2],
+      },
+    ].filter((item) => item.value > 0)
     : [];
 
   const popularPlansData = membershipStats
     ? membershipStats.popularPlans.map((plan) => ({
-        name: plan.name,
-        subscriptions: plan.subscriptionCount,
-        revenue: plan.revenue,
-      }))
+      name: plan.name,
+      subscriptions: plan.subscriptionCount,
+      revenue: plan.revenue,
+    }))
     : [];
 
   const revenueTrendData = membershipStats
     ? membershipStats.revenueTrends.map((item) => ({
-        date: new Date(item._id).toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-        }),
-        revenue: item.dailyRevenue,
-      }))
+      date: new Date(item._id).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      }),
+      revenue: item.dailyRevenue,
+    }))
     : [];
 
   if (loading) {
     return (
-      <div className="flex flex-col min-h-screen">
-        <AdminNavbar />
-        <div className="flex flex-1">
-          <Sidebar />
-          <div className="flex-1 bg-gradient-to-br from-dark-900 via-purple-900/20 to-pink-900/20 flex items-center justify-center">
-            <div className="text-white text-xl">Loading...</div>
+      <AdminLayout>
+        <div className="flex flex-col min-h-screen">
+          <div className="flex flex-1">
+            <div className="flex-1 bg-gradient-to-br from-dark-900 via-purple-900/20 to-pink-900/20 flex items-center justify-center">
+              <div className="text-white text-xl">Loading...</div>
+            </div>
           </div>
         </div>
-      </div>
+      </AdminLayout>
+
     );
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <AdminNavbar />
+    <AdminLayout>
+       <div className="flex flex-col min-h-screen">
       <div className="flex flex-1">
-        <Sidebar />
         <div className="flex-1 bg-gradient-to-br from-dark-900 via-purple-900/20 to-pink-900/20 overflow-x-hidden">
           <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             {/* Header */}
@@ -714,6 +704,8 @@ const AdminDashboard = () => {
         </div>
       </div>
     </div>
+    </AdminLayout>
+   
   );
 };
 

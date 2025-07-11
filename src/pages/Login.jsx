@@ -48,7 +48,7 @@ function Login() {
         navigate('/verify-otp', { state: { email: formData.email } });
       } else {
         if (role === 'admin') {
-          navigate('/admin/memberships');
+          navigate('/admin/dashboard');
         } else if (role === 'coach') {
           navigate('/messenger');
         } else {

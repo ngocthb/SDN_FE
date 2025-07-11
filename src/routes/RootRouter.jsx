@@ -4,7 +4,6 @@ import Login from "../pages/Login";
 import Register from "../pages/Register";
 import Homepage from "../pages/Homepage";
 import Messenger from "../pages/Messenger";
-import AdminMembershipPage from "../pages/admin/AdminMembershipPage";
 import CheckResetOTP from "../pages/CheckResetOTP";
 
 import CoachRoute from "./CoachRoute";
@@ -16,6 +15,7 @@ import AdminFeedbackPage from "../pages/admin/feedback/AdminFeedbackPage";
 import AdminRatingPage from "../pages/admin/rating/AdminRatingPage";
 import AdminUserPage from "../pages/admin/user/AdminUserPage";
 import AdminDashboard from "../pages/admin/dashboard/AdminDashboard";
+import AdminMembershipPage from "../pages/admin/membership/AdminMembershipPage";
 
 import AuthRoute from "./AuthRoute";
 import VerifyOTP from "../pages/VerifyOTP";

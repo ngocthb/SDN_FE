@@ -1,10 +1,15 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
-import api from "../../config/axios";
+import api from "../../../config/axios";
 import { toast } from "react-toastify";
 
-function AdminEditMembershipForm({ membership, onClose }) {
-  const [formData, setFormData] = useState(membership);
+function AdminAddMembershipForm({ onClose }) {
+  const [formData, setFormData] = useState({
+    name: "",
+    price: "",
+    duration: "",
+    description: "",
+  });
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -20,11 +25,11 @@ function AdminEditMembershipForm({ membership, onClose }) {
         description: formData.description,
       };
 
-      const response = await api.put(`admin/membership/update/${membership._id}`, payload);
+      const response = await api.post("admin/membership/create", payload);
       toast.success(response.data.message);
       onClose();
     } catch (error) {
-      console.error("Error updating membership:", error);
+      console.error("Error creating membership:", error);
       toast.error(error.response?.data.message);
     }
   };
@@ -36,7 +41,7 @@ function AdminEditMembershipForm({ membership, onClose }) {
         onClick={onClose}
       ></div>
       <div className="relative w-full max-w-lg glass-card p-6 rounded-xl">
-        <h2 className="text-2xl font-bold text-white mb-4">Edit Membership</h2>
+        <h2 className="text-2xl font-bold text-white mb-4">Add New Membership</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm text-white/70 mb-1">Name</label>
@@ -65,8 +70,8 @@ function AdminEditMembershipForm({ membership, onClose }) {
             <input
               type="number"
               name="duration"
-              value={formData.duration}
               min={1}
+              value={formData.duration}
               onChange={handleChange}
               className="input-glass w-full"
               required
@@ -102,15 +107,8 @@ function AdminEditMembershipForm({ membership, onClose }) {
   );
 }
 
-AdminEditMembershipForm.propTypes = {
-  membership: PropTypes.shape({
-    _id: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-    price: PropTypes.number.isRequired,
-    duration: PropTypes.number.isRequired,
-    description: PropTypes.string.isRequired,
-  }).isRequired,
+AdminAddMembershipForm.propTypes = {
   onClose: PropTypes.func.isRequired,
 };
 
-export default AdminEditMembershipForm;
+export default AdminAddMembershipForm;
