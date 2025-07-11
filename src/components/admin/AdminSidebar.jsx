@@ -1,7 +1,7 @@
 import { NavLink } from "react-router-dom";
 import { IoHomeOutline, IoPeopleOutline, IoStatsChartOutline, IoCardOutline } from "react-icons/io5";
 
-const Sidebar = () => {
+const AdminSidebar = () => {
   const menuItems = [
     { name: "Dashboard", path: "/admin/dashboard", icon: <IoStatsChartOutline /> },
     { name: "User Profiles", path: "/admin/users", icon: <IoPeopleOutline /> },
@@ -33,4 +33,4 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar;
+export default AdminSidebar;
