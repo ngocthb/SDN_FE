@@ -4,6 +4,7 @@ import Navbar from "../components/Navbar";
 import CustomSelect from "../components/CustomSelect";
 import CustomDatePicker from "../components/CustomDatePicker";
 import {
+  IoSettings,
   IoPerson,
   IoLockClosed,
   IoCamera,
@@ -11,6 +12,8 @@ import {
   IoCheckmarkCircle,
   IoAlertCircle,
   IoMail,
+  IoCall,
+  IoLocation,
   IoDocumentText,
   IoRefresh,
   IoSync,
@@ -25,17 +28,17 @@ import {
   IoMale,
   IoFemale,
 } from "react-icons/io5";
-import api from "../config/axios";
+import api from "../config/axios"; // Adjust the import based on your API setup
 import { useNavigate } from "react-router-dom";
 
 function Profile() {
+  const navigate = useNavigate();
   const { user, updateProfile } = useAuth();
   const [activeTab, setActiveTab] = useState("profile");
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState({ type: "", text: "" });
   const [showImageUrlModal, setShowImageUrlModal] = useState(false);
   const [tempImageUrl, setTempImageUrl] = useState("");
-  const navigate = useNavigate();
 
   // Profile form state
   const [profileData, setProfileData] = useState({
@@ -54,6 +57,11 @@ function Profile() {
     newPassword: "",
     confirmPassword: "",
   });
+
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/login");
+  };
 
   const handleProfileChange = (e) => {
     const { name, value } = e.target;
@@ -118,11 +126,17 @@ function Profile() {
         name: profileData.name,
         bio: profileData.bio,
         dateOfBirth: profileData.dateOfBirth,
-        picture: profileData.picture,
+        picture: profileData?.picture || null,
         gender: profileData.gender,
       };
       const response = await api.put("user/update-profile", updateData);
       if (response.data && response.data.data) {
+        setProfileData((prev) => ({
+          ...prev,
+          ...response.data.data,
+          email: prev.email,
+        }));
+
         setMessage({ type: "success", text: "Profile updated successfully!" });
       } else {
         setMessage({
@@ -138,6 +152,15 @@ function Profile() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const hasPasswordChanged = () => {
+    return (
+      passwordData.currentPassword.trim() &&
+      passwordData.newPassword.trim() &&
+      passwordData.confirmPassword.trim() &&
+      passwordData.currentPassword !== passwordData.newPassword // ✅ Kiểm tra khác nhau
+    );
   };
 
   const handlePasswordSubmit = async (e) => {
@@ -169,19 +192,39 @@ function Profile() {
       setIsLoading(false);
       return;
     }
+    
+    if (passwordData.currentPassword === passwordData.newPassword) {
+      setMessage({
+        type: "error",
+        text: "New password must be different from current password",
+      });
+      setIsLoading(false);
+      return;
+    }
 
     try {
       const response = await api.put("user/change-password", {
         oldPassword: passwordData.currentPassword,
         newPassword: passwordData.newPassword,
       });
-      if (response.data && response.data.success) {
-        setMessage({ type: "success", text: "Password changed successfully!" });
+      if (response.data && response.data.data) {
+        const successMessage = {
+          type: "success",
+          text: "Password changed successfully!",
+        };
+        console.log("Setting success message:", successMessage); // 🔍 DEBUG
+        setMessage(successMessage);
+        // Optionally, reset the password fields
         setPasswordData({
           currentPassword: "",
           newPassword: "",
           confirmPassword: "",
         });
+
+        setTimeout(() => {
+          localStorage.clear(); // Clear all stored data
+          navigate("/login");
+        }, 3000);
       } else {
         setMessage({
           type: "error",
@@ -241,19 +284,21 @@ function Profile() {
           name: userData.name || "",
           email: userData.email || "",
           bio: userData.bio || "",
-          gender: userData.gender ?? null,
+          gender: userData.gender !== undefined ? userData.gender : null, // ✅ Giữ nguyên boolean/null
           grantedAchievements: userData.grantedAchievements || [],
-          picture: userData.picture || "https://via.placeholder.com/150",
+          picture:
+            userData.picture ||
+            "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
           dateOfBirth: userData.dateOfBirth || "",
         });
       }
     } catch (error) {
       console.error("Error fetching user data:", error);
-      setMessage({ type: "error", text: "Could not fetch user data." });
     }
   };
 
   useEffect(() => {
+    // Fetch user data when component mounts
     fetchDataUser();
   }, []);
 
@@ -262,6 +307,7 @@ function Profile() {
       <Navbar />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Enhanced Header */}
         <div className="mb-12 text-center animate-fade-in">
           <h1 className="text-5xl font-bold text-white mb-4 gradient-text">
             Profile Settings
@@ -272,6 +318,7 @@ function Profile() {
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
+          {/* Enhanced Profile Card */}
           <div className="xl:col-span-1">
             <div className="glass-card p-8 animate-slide-up glow-effect">
               <div className="text-center">
@@ -293,7 +340,6 @@ function Profile() {
                   </button>
                 </div>
               </div>
-
               {/* --- START: UPDATED MEMBERSHIP SECTION --- */}
               <div className="mt-8 pt-6 border-t border-white/20 text-center">
                 <button
@@ -306,7 +352,6 @@ function Profile() {
               </div>
               {/* --- END: UPDATED MEMBERSHIP SECTION --- */}
             </div>
-
             <div
               className="glass-card p-6 mt-6 animate-slide-up glow-effect"
               style={{ animationDelay: "0.1s" }}
@@ -383,7 +428,6 @@ function Profile() {
                   </button>
                 ))}
               </div>
-
               <div className="p-10">
                 {message.text && (
                   <div
@@ -409,7 +453,6 @@ function Profile() {
                     <span className="font-medium">{message.text}</span>
                   </div>
                 )}
-
                 {activeTab === "profile" && (
                   <form
                     onSubmit={handleProfileSubmit}
@@ -454,9 +497,14 @@ function Profile() {
                           value={profileData.email}
                           onChange={handleProfileChange}
                           className="input-glass h-14 text-lg"
-                          placeholder="Enter your email"
+
                           disabled
+                          readOnly
                         />
+                        <p className="text-xs text-gray-500 mt-1">
+                          💡 Email address cannot be modified for security
+                          reasons
+                        </p>
                       </div>
 
                       <div className="space-y-2">
@@ -522,7 +570,26 @@ function Profile() {
                       <button
                         type="button"
                         className="glass-button flex items-center space-x-2 px-8 py-4 text-lg"
-                        onClick={fetchDataUser}
+                        // onClick={() =>
+                        //   setProfileData({
+                        //     name: user?.name || "",
+                        //     // email: user?.email || "",
+                        //     bio: user?.bio || "",
+                        //     phone: user?.phone || "",
+                        //     location: user?.location || "",
+                        //     gender:
+                        //       user?.gender !== undefined ? user.gender : null,
+                        //     dateOfBirth: user?.dateOfBirth || "",
+                        //   })
+                        // }
+                        onClick={async () => {
+                          // ✅ THÊM MỚI: Fetch lại data mới nhất thay vì dùng user cũ
+                          await fetchDataUser();
+                          setMessage({
+                            type: "success",
+                            text: "Profile data refreshed!",
+                          });
+                        }}
                       >
                         <IoRefresh size={20} />
                         <span>Reset</span>
@@ -549,7 +616,6 @@ function Profile() {
                     </div>
                   </form>
                 )}
-
                 {activeTab === "password" && (
                   <form
                     onSubmit={handlePasswordSubmit}
@@ -660,7 +726,8 @@ function Profile() {
                       </button>
                       <button
                         type="submit"
-                        disabled={isLoading}
+
+                        disabled={isLoading || !hasPasswordChanged()}
                         className={`gradient-button flex items-center space-x-2 px-8 py-4 text-lg shadow-2xl ${
                           isLoading ? "opacity-50 cursor-not-allowed" : ""
                         }`}
