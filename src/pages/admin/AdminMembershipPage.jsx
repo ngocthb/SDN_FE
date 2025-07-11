@@ -2,19 +2,29 @@ import { useEffect, useState } from "react";
 import AdminNavbar from "../../components/admin/AdminNavbar";
 import Sidebar from "../../components/Sidebar";
 import { IoAddCircleOutline, IoTrashOutline, IoPencilOutline } from "react-icons/io5";
-import AdminMembershipForm from "../../components/admin/AdminMembershipForm";
+import AdminAddMembershipForm from "../../components/admin/AdminAddMembershipForm";
+import AdminEditMembershipForm from "../../components/admin/AdminEditMembershipForm";
 import api from "../../config/axios";
+import { toast } from 'react-toastify';
 
 function AdminMembershipPage() {
   const [memberships, setMemberships] = useState([]);
   const [selectedMembership, setSelectedMembership] = useState(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [membershipToDelete, setMembershipToDelete] = useState(null);
+  const [isRestoreModalOpen, setIsRestoreModalOpen] = useState(false);
+  const [membershipToRestore, setMembershipToRestore] = useState(null);
 
   const fetchMemberships = async () => {
     try {
-      const response = await api.get("membership/all");
+      const response = await api.get("/admin/membership");
       if (response.data.status === "OK") {
-        setMemberships(response.data.data);
+        const memberships = response.data.data.map((membership) => ({
+          ...membership,
+          status: membership.isDeleted ? "Inactive" : "Active",
+        }));
+        setMemberships(memberships);
       } else {
         console.error("Failed to fetch memberships:", response.data.message);
       }
@@ -32,25 +42,58 @@ function AdminMembershipPage() {
     setIsFormOpen(true);
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this membership?")) {
-      try {
-        await api.delete(`/membership/delete/${id}`);
-        fetchMemberships();
-      } catch (error) {
-        console.error("Error deleting membership:", error);
-      }
+  const handleOpenDeleteModal = (membership) => {
+    setMembershipToDelete(membership);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setMembershipToDelete(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      await api.delete(`/admin/membership/delete/${membershipToDelete._id}`);
+      fetchMemberships();
+      toast.success("Membership deleted successfully!");
+      handleCloseDeleteModal();
+    } catch (error) {
+      console.log("Error deleting membership:", error);
+      toast.error(error.response.data.message);
     }
   };
 
   const handleAddNew = () => {
-    setSelectedMembership(null);
+    setSelectedMembership({ name: '', price: 0, duration: 0, description: '' });
     setIsFormOpen(true);
   };
 
   const handleCloseForm = () => {
     setIsFormOpen(false);
     fetchMemberships();
+  };
+
+  const handleOpenRestoreModal = (membership) => {
+    setMembershipToRestore(membership);
+    setIsRestoreModalOpen(true);
+  };
+
+  const handleCloseRestoreModal = () => {
+    setIsRestoreModalOpen(false);
+    setMembershipToRestore(null);
+  };
+
+  const handleConfirmRestore = async () => {
+    try {
+      await api.patch(`/admin/membership/restore/${membershipToRestore._id}`);
+      fetchMemberships();
+      toast.success("Membership restored successfully!");
+      handleCloseRestoreModal();
+    } catch (error) {
+      console.log("Error restoring membership:", error);
+      toast.error(error.response.data.message);
+    }
   };
 
   return (
@@ -78,7 +121,7 @@ function AdminMembershipPage() {
                     <th className="text-left py-2">Name</th>
                     <th className="text-left py-2">Price</th>
                     <th className="text-left py-2">Duration</th>
-                    <th className="text-left py-2">Tier</th>
+                    <th className="text-left py-2">Status</th>
                     <th className="text-left py-2">Actions</th>
                   </tr>
                 </thead>
@@ -87,22 +130,32 @@ function AdminMembershipPage() {
                     memberships.map((membership) => (
                       <tr key={membership._id} className="border-b border-white/10">
                         <td className="py-2">{membership.name}</td>
-                        <td className="py-2">${membership.price}</td>
+                        <td className="py-2">
+                          {membership.price.toLocaleString('vi-VN')} VND
+                        </td>
                         <td className="py-2">{membership.duration} days</td>
-                        <td className="py-2 capitalize">{membership.tier}</td>
+                        <td className={`py-2 font-bold ${membership.status === 'Active' ? 'text-green-400' : 'text-red-400'}`}>{membership.status}</td>
                         <td className="py-2 flex gap-4">
                           <button
                             onClick={() => handleEdit(membership)}
-                            className="text-blue-400 hover:text-blue-300"
+                            className="text-blue-400 hover:text-blue-300 flex items-center gap-2"
                           >
                             <IoPencilOutline />
                           </button>
                           <button
-                            onClick={() => handleDelete(membership._id)}
-                            className="text-red-400 hover:text-red-300"
+                            onClick={() => handleOpenDeleteModal(membership)}
+                            className="text-red-400 hover:text-red-300 flex items-center gap-2"
                           >
                             <IoTrashOutline />
                           </button>
+                          {membership.isDeleted && (
+                            <button
+                              onClick={() => handleOpenRestoreModal(membership)}
+                              className="text-green-400 hover:text-green-300 flex items-center gap-2"
+                            >
+                              <IoAddCircleOutline />
+                            </button>
+                          )}
                         </td>
                       </tr>
                     ))
@@ -119,10 +172,75 @@ function AdminMembershipPage() {
           </div>
 
           {isFormOpen && (
-            <AdminMembershipForm
-              membership={selectedMembership}
-              onClose={handleCloseForm}
-            />
+            selectedMembership && selectedMembership._id ? (
+              <AdminEditMembershipForm
+                membership={selectedMembership}
+                onClose={handleCloseForm}
+              />
+            ) : (
+              <AdminAddMembershipForm
+                membership={selectedMembership}
+                onClose={handleCloseForm}
+              />
+            )
+          )}
+
+          {isDeleteModalOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+              <div
+                className="absolute inset-0 bg-black/20 backdrop-blur-sm"
+                onClick={handleCloseDeleteModal}
+              ></div>
+              <div className="relative w-full max-w-md glass-card p-6 rounded-xl">
+                <h2 className="text-xl font-bold text-white mb-4">Confirm Delete</h2>
+                <p className="text-white/70 mb-6">
+                  Are you sure you want to delete the membership &quot;{membershipToDelete?.name}&quot;?
+                </p>
+                <div className="flex justify-end gap-4">
+                  <button
+                    onClick={handleCloseDeleteModal}
+                    className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-400"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleConfirmDelete}
+                    className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-400"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {isRestoreModalOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+              <div
+                className="absolute inset-0 bg-black/20 backdrop-blur-sm"
+                onClick={handleCloseRestoreModal}
+              ></div>
+              <div className="relative w-full max-w-md glass-card p-6 rounded-xl">
+                <h2 className="text-xl font-bold text-white mb-4">Confirm Restore</h2>
+                <p className="text-white/70 mb-6">
+                  Are you sure you want to restore the membership &quot;{membershipToRestore?.name}&quot;?
+                </p>
+                <div className="flex justify-end gap-4">
+                  <button
+                    onClick={handleCloseRestoreModal}
+                    className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-400"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleConfirmRestore}
+                    className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-400"
+                  >
+                    Restore
+                  </button>
+                </div>
+              </div>
+            </div>
           )}
         </div>
       </div>

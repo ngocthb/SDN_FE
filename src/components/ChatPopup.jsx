@@ -70,7 +70,6 @@ function ChatPopup({ isOpen, onClose }) {
         setMessage(e.target.value);
 
         const chatId = chats[0]?.chatId;
-        console.log(chatId)
         if (!chatId) return;
 
         socket.emit("typing", {
@@ -160,16 +159,17 @@ function ChatPopup({ isOpen, onClose }) {
                             style={{ animationDelay: `${index * 0.05}s` }}
                         >
                             <div
-                                className={`max-w-[250px] px-3 py-2 rounded-2xl shadow-lg text-sm ${msg.senderId._id === userId
+                                className={`max-w-[250px] px-3 py-2 rounded-2xl shadow-lg text-sm break-words ${msg.senderId._id === userId
                                     ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white'
                                     : 'bg-white/20 backdrop-blur-md border border-white/30 text-white'
                                     }`}
                             >
-                                <p>{msg.message}</p>
+                                <p className="break-words">{msg.message}</p>
                                 <p className={`text-xs mt-1 ${msg.senderId._id === userId ? 'text-white/80' : 'text-white/60'}`}>
                                     {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                 </p>
                             </div>
+
                         </div>
 
                     ))}

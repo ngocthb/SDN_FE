@@ -1,23 +1,28 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { fetchLoginThunk } from '../redux/features/user/userThunk';
+import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import {
-  IoMailOutline,
-  IoLockClosedOutline,
-  IoEyeOffOutline,
-  IoEyeOutline
-} from 'react-icons/io5';
 import Navbar from '../components/Navbar';
+import { useDispatch } from 'react-redux';
+import { fetchResetPasswordThunk } from '../redux/features/user/userThunk';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { IoEyeOutline, IoEyeOffOutline, IoLockClosedOutline } from 'react-icons/io5';
 
-
-function Login() {
-  const [formData, setFormData] = useState({ email: '', password: '' });
+function ResetPassword() {
+  const location = useLocation();
+  const [email] = useState(location.state?.email || '');
+  const [otp] = useState(location.state?.otp || '');
+  const [formData, setFormData] = useState({ newPassword: '', confirmPassword: '' });
   const [isLoading, setIsLoading] = useState(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+   useEffect(() => {
+    if (!email || !otp) {
+      toast.error('Unauthorized access. Please verify your OTP to proceed.');
+      navigate('/forgot-password');
+    }
+  }, [email, otp]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -27,34 +32,27 @@ function Login() {
     setIsPasswordVisible(!isPasswordVisible);
   };
 
+  const toggleConfirmPasswordVisibility = () => {
+    setIsConfirmPasswordVisible(!isConfirmPasswordVisible);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
-    if (!formData.email || !formData.password) {
-      toast.error('Please fill in all fields');
+    if (formData.newPassword !== formData.confirmPassword) {
+      toast.error('Passwords do not match!');
       setIsLoading(false);
       return;
     }
 
-    const result = await dispatch(fetchLoginThunk(formData));
+    const result = await dispatch(fetchResetPasswordThunk({ email, otp, newPassword: formData.newPassword }));
 
     if (result.error) {
       toast.error(result.payload);
     } else {
-      toast.success('Logged in successfully!');
-      const role = localStorage.getItem('role');
-      if (!result.payload.status) {
-        navigate('/verify-otp', { state: { email: formData.email } });
-      } else {
-        if (role === 'admin') {
-          navigate('/admin/memberships');
-        } else if (role === 'coach') {
-          navigate('/messenger');
-        } else {
-          navigate('/home');
-        }
-      }
+      toast.success(result.message || 'Password reset successfully!');
+      navigate('/login');
     }
 
     setIsLoading(false);
@@ -73,47 +71,27 @@ function Login() {
 
         <div className="max-w-md w-full space-y-8 relative z-10">
           <div className="text-center animate-fade-in">
-            <h2 className="text-4xl font-bold gradient-text mb-2">Welcome back ✨</h2>
-            <p className="text-white/70 text-lg">Sign in to continue your journey</p>
+            <h2 className="text-4xl font-bold gradient-text mb-2">Reset Password ✨</h2>
+            <p className="text-white/70 text-lg">Enter your new password</p>
+            <p className="text-white/70 text-sm mt-2">Email: <span className="font-bold">{email}</span></p> {/* Hiển thị email */}
           </div>
 
           <div className="glass-card p-8 animate-slide-up glow-effect">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-white/90 mb-2">
-                  Email address
-                </label>
-                <div className="relative">
-                  <IoMailOutline className="absolute top-1/2 left-3 transform -translate-y-1/2 text-white/40 text-lg" />
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    required
-                    className="input-glass pl-10"
-                    placeholder="Enter your email"
-                    value={formData.email}
-                    onChange={handleChange}
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium text-white/90 mb-2">
-                  Password
+                <label htmlFor="newPassword" className="block text-sm font-medium text-white/90 mb-2">
+                  New Password
                 </label>
                 <div className="relative">
                   <IoLockClosedOutline className="absolute top-1/2 left-3 transform -translate-y-1/2 text-white/40 text-lg" />
                   <input
-                    id="password"
-                    name="password"
+                    id="newPassword"
+                    name="newPassword"
                     type={isPasswordVisible ? 'text' : 'password'}
-                    autoComplete="current-password"
                     required
                     className="input-glass pl-10"
-                    placeholder="Enter your password"
-                    value={formData.password}
+                    placeholder="Enter your new password"
+                    value={formData.newPassword}
                     onChange={handleChange}
                   />
                   <button
@@ -125,10 +103,31 @@ function Login() {
                   </button>
                 </div>
               </div>
-              <div className="text-right mt-2">
-                <Link to="/forgot-password" className="text-sm text-purple-400 hover:text-purple-300 transition-colors">
-                  Forgot Password?
-                </Link>
+
+              <div>
+                <label htmlFor="confirmPassword" className="block text-sm font-medium text-white/90 mb-2">
+                  Confirm Password
+                </label>
+                <div className="relative">
+                  <IoLockClosedOutline className="absolute top-1/2 left-3 transform -translate-y-1/2 text-white/40 text-lg" />
+                  <input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type={isConfirmPasswordVisible ? 'text' : 'password'}
+                    required
+                    className="input-glass pl-10"
+                    placeholder="Confirm your new password"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                  />
+                  <button
+                    type="button"
+                    onClick={toggleConfirmPasswordVisibility}
+                    className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-400"
+                  >
+                    {isConfirmPasswordVisible ? <IoEyeOffOutline /> : <IoEyeOutline />}
+                  </button>
+                </div>
               </div>
 
               <button
@@ -143,20 +142,11 @@ function Login() {
                   </svg>
                 ) : (
                   <>
-                    Sign in
+                    Reset Password
                   </>
                 )}
               </button>
             </form>
-
-            <div className="mt-6 text-center">
-              <p className="text-white/70">
-                Don&apos;t have an account?{' '}
-                <Link to="/register" className="font-medium text-purple-400 hover:text-purple-300 transition-colors">
-                  Sign up
-                </Link>
-              </p>
-            </div>
           </div>
         </div>
       </div>
@@ -164,4 +154,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default ResetPassword;

@@ -30,8 +30,8 @@ function Navbar() {
               <Link
                 to="/home"
                 className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${isActive('/home')
-                    ? 'bg-purple-500/20 text-purple-300 shadow-lg shadow-purple-500/25'
-                    : 'text-white/70 hover:text-white hover:bg-white/10'
+                  ? 'bg-purple-500/20 text-purple-300 shadow-lg shadow-purple-500/25'
+                  : 'text-white/70 hover:text-white hover:bg-white/10'
                   }`}
               >
                 <IoHomeOutline />
@@ -51,7 +51,7 @@ function Navbar() {
               </Link>
             ) : (
               <>
-                <div className="flex items-center space-x-3 glass-card px-4 py-2">
+                <div className="flex items-center space-x-3 glass-card px-4 py-2  cursor-pointer" onClick={(() => navigate('/profile'))}>
                   {userAvatar ? (
                     <img
                       src={userAvatar}
