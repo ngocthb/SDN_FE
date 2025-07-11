@@ -312,7 +312,10 @@ function ProgressLog() {
                   Bạn cần có gói đăng ký để sử dụng tính năng này
                 </p>
               </div>
-              <button onClick={() => navigate("/user/membership")} className="ml-auto bg-purple-500/20 text-purple-300 border border-purple-500/30 hover:bg-purple-500/30 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300">
+              <button
+                onClick={() => navigate("/user/membership")}
+                className="ml-auto bg-purple-500/20 text-purple-300 border border-purple-500/30 hover:bg-purple-500/30 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300"
+              >
                 Đăng ký ngay
               </button>
             </div>
@@ -387,7 +390,20 @@ function ProgressLog() {
                   className="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-lg p-4 border border-yellow-500/30 transform hover:scale-105 transition-all duration-300"
                 >
                   <div className="flex items-start gap-3">
-                    <span className="text-2xl">{achievement.icon || "🏅"}</span>
+                    {/* <span className="text-2xl">{achievement.icon || "🏅"}</span> */}
+                    {achievement.icon ? (
+                      <img
+                        src={achievement.icon}
+                        alt={achievement.name || "Achievement"}
+                        className="w-8 h-8 object-cover rounded-full border-2 border-yellow-400/50"
+                        onError={(e) => {
+                          e.target.style.display = "none";
+                          e.target.nextSibling.style.display = "inline-block";
+                        }}
+                      />
+                    ) : (
+                      <span className="text-2xl">🏅</span>
+                    )}
                     <div className="flex-1">
                       <h4 className="font-semibold text-yellow-300 mb-1">
                         {achievement.name}

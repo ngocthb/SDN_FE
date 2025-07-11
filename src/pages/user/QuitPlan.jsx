@@ -19,6 +19,7 @@ import {
   clearSmokingStatusState,
 } from "../../redux/features/smokingStatus/smokingStatusSlice";
 import { getMySubscription } from "../../redux/features/subscription/subscriptionSlice";
+import { getProgressLogs } from "../../redux/features/progressLog/progressLogSlice";
 function QuitPlan() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -68,6 +69,7 @@ function QuitPlan() {
       dispatch(getCurrentPlan());
       dispatch(getCurrentStage());
       dispatch(getSmokingStatus());
+      dispatch(getProgressLogs({}));
     }
   }, [dispatch, hasActiveSubscription, subscriptionLoading]);
 
@@ -365,7 +367,10 @@ function QuitPlan() {
                   Bạn cần có gói đăng ký để sử dụng tính năng này
                 </p>
               </div>
-              <button onClick={() => navigate("/user/membership")} className="ml-auto bg-purple-500/20 text-purple-300 border border-purple-500/30 hover:bg-purple-500/30 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300">
+              <button
+                onClick={() => navigate("/user/membership")}
+                className="ml-auto bg-purple-500/20 text-purple-300 border border-purple-500/30 hover:bg-purple-500/30 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300"
+              >
                 Đăng ký ngay
               </button>
             </div>
