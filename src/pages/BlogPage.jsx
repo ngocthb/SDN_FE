@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   fetchBlogs,
   resetBlogState,
   createBlog,
-  deleteBlog, // 1. Import thunk deleteBlog
+  deleteBlog,
 } from "../redux/features/blog/blogSlice";
+import { getMySubscription } from "../redux/features/subscription/subscriptionSlice";
 import Navbar from "../components/Navbar";
 import {
   IoTimeOutline,
@@ -15,7 +16,8 @@ import {
   IoImageOutline,
   IoTrophyOutline,
   IoWarningOutline,
-  IoEllipsisHorizontal,
+  IoEllipsisVertical,
+  IoLockClosedOutline,
 } from "react-icons/io5";
 import { format } from "date-fns";
 import { toast } from "react-toastify";
@@ -57,7 +59,7 @@ const ConfirmDeleteModal = ({ isOpen, onClose, onConfirm }) => {
   );
 };
 
-// --- COMPONENT CON: Achievement Selector Dropdown (Không thay đổi) ---
+// --- COMPONENT CON: Achievement Selector Dropdown ---
 const AchievementSelector = ({ achievements, onSelect, disabledIds }) => {
   const availableAchievements = achievements.filter(
     (ach) => !disabledIds.has(ach._id)
@@ -90,7 +92,7 @@ const AchievementSelector = ({ achievements, onSelect, disabledIds }) => {
   );
 };
 
-// --- COMPONENT MODAL TẠO BÀI VIẾT MỚI (Không thay đổi) ---
+// --- COMPONENT MODAL TẠO BÀI VIẾT MỚI ---
 const CreateBlogModal = ({ isOpen, onClose }) => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
@@ -161,10 +163,11 @@ const CreateBlogModal = ({ isOpen, onClose }) => {
       }
 
       await dispatch(createBlog(formData)).unwrap();
-
+      toast.success("Đăng bài viết thành công!");
       handleClose();
     } catch (error) {
       console.error("Failed to create post:", error);
+      toast.error(`Lỗi khi đăng bài: ${error}`);
       setErrors({ api: error || "Đã có lỗi xảy ra khi đăng bài." });
     } finally {
       setIsSubmitting(false);
@@ -393,7 +396,7 @@ const CreateBlogModal = ({ isOpen, onClose }) => {
   );
 };
 
-// --- THẺ BÀI VIẾT (ĐÃ KẾT NỐI API XÓA) ---
+// --- THẺ BÀI VIẾT ---
 const BlogCard = ({ blog }) => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
@@ -442,7 +445,7 @@ const BlogCard = ({ blog }) => {
     try {
       await dispatch(deleteBlog(blog._id)).unwrap();
       setIsConfirmModalOpen(false);
-      toast.success("Xóa bài viết thành công")
+      toast.success("Xóa bài viết thành công");
     } catch (error) {
       console.error("Failed to delete the post:", error);
       toast.error(`Lỗi khi xóa bài viết: ${error}`);
@@ -476,7 +479,7 @@ const BlogCard = ({ blog }) => {
                   onClick={() => setIsMenuOpen(!isMenuOpen)}
                   className="p-2 rounded-full hover:bg-white/10 transition-colors"
                 >
-                  <IoEllipsisHorizontal className="text-white/70" size={20} />
+                  <IoEllipsisVertical className="text-white/70" size={20} />
                 </button>
                 {isMenuOpen && (
                   <div className="absolute top-full right-0 mt-2 w-48 bg-dark-800 border border-white/10 rounded-lg shadow-2xl z-10 animate-fade-in-fast">
@@ -541,7 +544,7 @@ const BlogCard = ({ blog }) => {
   );
 };
 
-// --- WIDGET TẠO BÀI VIẾT (Không thay đổi) ---
+// --- WIDGET TẠO BÀI VIẾT ---
 const CreatePostWidget = ({ onOpenModal }) => {
   const { user, isAuthChecked } = useSelector((state) => state.user);
   if (!isAuthChecked) {
@@ -574,16 +577,54 @@ const CreatePostWidget = ({ onOpenModal }) => {
   );
 };
 
-// --- COMPONENT TRANG BLOG CHÍNH (Không thay đổi) ---
+// --- COMPONENT TRANG BLOG CHÍNH ---
 function BlogPage() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const { blogs, status, hasMore, page, error } = useSelector(
     (state) => state.blog
   );
   const { isAuthChecked } = useSelector((state) => state.user);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { hasActiveSubscription, loading: subscriptionLoading } = useSelector(
+    (state) => state.subscription
+  );
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const observer = useRef();
+
+  useEffect(() => {
+    if (isAuthChecked) {
+      dispatch(getMySubscription());
+    }
+  }, [dispatch, isAuthChecked]);
+
+  useEffect(() => {
+    if (isAuthChecked && hasActiveSubscription) {
+      if (status === "idle") {
+        dispatch(fetchBlogs({ page: 0, initialLoad: true }));
+      }
+    } else if (
+      isAuthChecked &&
+      !hasActiveSubscription &&
+      !subscriptionLoading
+    ) {
+      dispatch(resetBlogState());
+    }
+  }, [
+    isAuthChecked,
+    hasActiveSubscription,
+    subscriptionLoading,
+    status,
+    dispatch,
+  ]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(resetBlogState());
+    };
+  }, [dispatch]);
+
   const lastBlogElementRef = useCallback(
     (node) => {
       if (status === "loading") return;
@@ -598,20 +639,6 @@ function BlogPage() {
     [status, hasMore, page, dispatch]
   );
 
-  useEffect(() => {
-    if (isAuthChecked) {
-      if (status === "idle") {
-        dispatch(fetchBlogs({ page: 0, initialLoad: true }));
-      }
-    }
-  }, [isAuthChecked, status, dispatch]);
-
-  useEffect(() => {
-    return () => {
-      dispatch(resetBlogState());
-    };
-  }, [dispatch]);
-
   const renderInitialLoading = () => (
     <div className="space-y-8">
       {[...Array(3)].map((_, i) => (
@@ -622,15 +649,37 @@ function BlogPage() {
       ))}
     </div>
   );
+
   const renderError = () => (
     <div className="glass-card p-8 text-center text-white">
-      <h2 className="text-2xl mb-2">Something went wrong</h2>
+      <h2 className="text-2xl mb-2">Đã xảy ra lỗi</h2>
       <p className="text-red-400 mb-4">{error}</p>
       <button
         onClick={() => dispatch(fetchBlogs({ page: 0, initialLoad: true }))}
         className="gradient-button"
       >
-        Try Again
+        Thử lại
+      </button>
+    </div>
+  );
+
+  const renderSubscriptionGate = () => (
+    <div className="glass-card p-8 rounded-2xl mb-6 border border-red-500/30 bg-red-500/10 text-center">
+      <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-purple-500/20 mb-4">
+        <IoLockClosedOutline className="h-8 w-8 text-purple-400" />
+      </div>
+      <h3 className="text-2xl font-bold text-white mb-2">
+        Tính năng dành cho thành viên
+      </h3>
+      <p className="text-white/70 mb-6">
+        Nâng cấp tài khoản để tham gia cộng đồng, chia sẻ câu chuyện của bạn và
+        đọc bài viết từ người khác.
+      </p>
+      <button
+        onClick={() => navigate("/user/membership")}
+        className="gradient-button text-lg py-3 px-8 transition-transform hover:scale-105"
+      >
+        Nâng cấp ngay
       </button>
     </div>
   );
@@ -639,11 +688,24 @@ function BlogPage() {
     <div className="min-h-screen bg-gradient-to-br from-dark-900 via-purple-900/20 to-pink-900/20">
       <Navbar />
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <CreatePostWidget onOpenModal={() => setIsModalOpen(true)} />
-        {isAuthChecked ? (
+        <h1 className="text-4xl font-bold text-center bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-2 py-3">
+          Cộng đồng & Chia sẻ
+        </h1>
+        <p className="text-center text-gray-400 mb-8">
+          Nơi chia sẻ câu chuyện và kinh nghiệm trong hành trình của bạn.
+        </p>
+
+        {subscriptionLoading || !isAuthChecked ? (
+          renderInitialLoading()
+        ) : !hasActiveSubscription ? (
+          renderSubscriptionGate()
+        ) : (
           <>
+            <CreatePostWidget onOpenModal={() => setIsModalOpen(true)} />
+
             {status === "loading" && page === 0 && renderInitialLoading()}
             {status === "failed" && page === 0 && renderError()}
+
             <div className="space-y-8">
               {blogs.map((blog, index) => {
                 if (blogs.length === index + 1) {
@@ -657,28 +719,30 @@ function BlogPage() {
                 }
               })}
             </div>
+
             {status === "loading" && page > 0 && (
               <div className="flex justify-center items-center py-8 space-x-3 text-white">
                 <IoSyncCircle className="animate-spin text-3xl text-purple-400" />{" "}
                 <span className="text-lg">Loading more...</span>
               </div>
             )}
+
             {!hasMore && blogs.length > 0 && (
               <p className="text-center text-white/50 py-8">
-                You've seen it all!
+                Bạn đã xem hết rồi!
               </p>
             )}
+
             {status === "succeeded" && blogs.length === 0 && (
               <div className="text-center text-white/70 py-12 glass-card rounded-2xl">
-                <h3 className="text-2xl font-bold">No articles found</h3>
-                <p>Be the first to share your story!</p>
+                <h3 className="text-2xl font-bold">Chưa có bài viết nào</h3>
+                <p>Hãy là người đầu tiên chia sẻ câu chuyện của bạn!</p>
               </div>
             )}
           </>
-        ) : (
-          renderInitialLoading()
         )}
       </div>
+
       <CreateBlogModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
