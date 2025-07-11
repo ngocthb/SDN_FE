@@ -18,10 +18,12 @@ import { getMySubscription } from "../redux/features/subscription/subscriptionSl
 function Homepage() {
   const dispatch = useDispatch();
   const { hasActiveSubscription } = useSelector((state) => state.subscription);
-  const { user } = useSelector((state) => state.user);
+  // const { user } = useSelector((state) => state.user);
+  const token = localStorage.getItem("token");
+  const userName = localStorage.getItem("userName");
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [selectedContact, setSelectedContact] = useState(null);
-
+  // const [isInitialLoad, setIsInitialLoad] = useState(true);
   const stats = [
     {
       label: "Messages Sent",
@@ -100,15 +102,18 @@ function Homepage() {
     },
   ];
 
-  const shouldShowChatButton = useMemo(() => {
-    return user && hasActiveSubscription;
-  }, [user, hasActiveSubscription]);
+  // const shouldShowChatButton = useMemo(() => {
+  //   if (isInitialLoad && subscriptionLoading) {
+  //     return false;
+  //   }
+  //   return user && hasActiveSubscription;
+  // }, [user, hasActiveSubscription, isInitialLoad, subscriptionLoading]);
 
   useEffect(() => {
-    if (user) {
+    if (token) {
       dispatch(getMySubscription());
     }
-  }, [dispatch, user]);
+  }, [dispatch, token]);
 
   const handleChatClick = (contact) => {
     setSelectedContact(contact);
@@ -128,7 +133,7 @@ function Homepage() {
         {/* Welcome Section */}
         <div className="mb-8 animate-fade-in">
           <h1 className="text-4xl font-bold text-white mb-2">
-            Welcome back, <span className="gradient-text">{user?.name}</span>!
+            Welcome back, <span className="gradient-text">{userName}</span>!
           </h1>
           <p className="text-white/70 text-lg">
             Stay connected with your friends and colleagues
@@ -251,7 +256,7 @@ function Homepage() {
         </div>
 
         {/* Floating Chat Button */}
-        {shouldShowChatButton && (
+        {token && hasActiveSubscription && (
           <button
             onClick={() => handleChatClick(recentChats[0])}
             className="fixed bottom-6 right-6 w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white rounded-full shadow-2xl hover:scale-110 transition-all duration-300 flex items-center justify-center text-3xl z-40 animate-float glow-effect"
