@@ -78,7 +78,7 @@ function Navbar() {
                     Ghi nhận
                   </Link>
                   <Link
-                    to="#"
+                    to="/blog"
                     className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
                       isActive("/blog")
                         ? "bg-purple-500/20 text-purple-300 shadow-lg shadow-purple-500/25"
