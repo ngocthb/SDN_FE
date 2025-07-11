@@ -1,7 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Navbar from "../components/Navbar";
+import ChatPopup from "../components/ChatPopup";
 import {
   IoArrowForwardSharp,
   IoSparkles,
@@ -10,9 +11,14 @@ import {
   IoBulbOutline,
   IoTrophyOutline,
   IoRibbonOutline,
+  IoChatbubbleEllipsesOutline,
+  IoCalendarOutline,
+  IoChatbubblesSharp,
+  IoSettingsOutline,
+  IoAddCircleOutline,
 } from "react-icons/io5";
 import { fetchLeaderboard } from "../redux/features/achievement/achievementSlice";
-
+import { getMySubscription } from "../redux/features/subscription/subscriptionSlice";
 // --- Component con cho thẻ tính năng ---
 const FeatureCard = ({ icon, title, description, gradient }) => (
   <div className="glass-card p-6 text-center animate-slide-up glow-effect">
@@ -168,7 +174,7 @@ function Homepage() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [selectedContact, setSelectedContact] = useState(null);
   // const [isInitialLoad, setIsInitialLoad] = useState(true);
-const features = [
+  const features = [
     {
       title: "Theo Dõi Tiến Trình",
       description:
@@ -211,13 +217,38 @@ const features = [
     },
   ];
 
-
-  // const shouldShowChatButton = useMemo(() => {
-  //   if (isInitialLoad && subscriptionLoading) {
-  //     return false;
-  //   }
-  //   return user && hasActiveSubscription;
-  // }, [user, hasActiveSubscription, isInitialLoad, subscriptionLoading]);
+  const recentChats = [
+    {
+      id: 1,
+      name: "Alice Johnson",
+      lastMessage: "Hey, how are you doing?",
+      time: "2 min ago",
+      avatar:
+        "https://images.pexels.com/photos/1310522/pexels-photo-1310522.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop",
+      unread: 2,
+      status: "online",
+    },
+    {
+      id: 2,
+      name: "Bob Smith",
+      lastMessage: "Let's meet tomorrow for lunch",
+      time: "1 hour ago",
+      avatar:
+        "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop",
+      unread: 0,
+      status: "offline",
+    },
+    {
+      id: 3,
+      name: "Carol Williams",
+      lastMessage: "Thanks for your help!",
+      time: "3 hours ago",
+      avatar:
+        "https://images.pexels.com/photos/1542085/pexels-photo-1542085.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop",
+      unread: 1,
+      status: "online",
+    },
+  ];
 
   useEffect(() => {
     if (token) {
@@ -314,7 +345,6 @@ const features = [
               Tham Gia Ngay
             </Link>
           </div>
-
         </section>
         {/* Floating Chat Button */}
         {token && hasActiveSubscription && (
@@ -327,7 +357,6 @@ const features = [
         )}
       </main>
       <ChatPopup isOpen={isChatOpen} onClose={handleCloseChatPopup} />
-
     </div>
   );
 }
