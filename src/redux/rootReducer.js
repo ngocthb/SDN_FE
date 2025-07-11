@@ -9,6 +9,7 @@ import smokingStatusReducer from "./features/smokingStatus/smokingStatusSlice";
 import subscriptionReducer from "./features/subscription/subscriptionSlice";
 import quitPlanReducer from "./features/quitPlan/quitPlanSlice";
 import progressLogReducer from "./features/progressLog/progressLogSlice";
+import membershipReducer from "./features/userMembership/userMembershipSlice";
 const rootReducer = combineReducers({
   user: userReducer,
   coach: coachReducer,
@@ -17,6 +18,7 @@ const rootReducer = combineReducers({
   subscription: subscriptionReducer,
   quitPlan: quitPlanReducer,
   progressLog: progressLogReducer,
+  membership: membershipReducer,
 });
 
 export default rootReducer;

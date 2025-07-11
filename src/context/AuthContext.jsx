@@ -1,23 +1,29 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from "react";
 
 const AuthContext = createContext();
 
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 }
 
 export function AuthProvider({ children }) {
+  const navEntries = performance.getEntriesByType("navigation");
+  const isBackForward = navEntries[0]?.type === "back_forward";
+
+  if (isBackForward) {
+    window.location.reload(); // ✅ Force reload để đảm bảo React khởi tạo lại đúng
+  }
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Check if user is logged in (simulate checking localStorage or API)
-    const savedUser = localStorage.getItem('user');
+    const savedUser = localStorage.getItem("user");
     if (savedUser) {
       setUser(JSON.parse(savedUser));
       setIsAuthenticated(true);
@@ -30,17 +36,17 @@ export function AuthProvider({ children }) {
       // Simulate API call
       const userData = {
         id: 1,
-        name: email.split('@')[0],
+        name: email.split("@")[0],
         email: email,
-        avatar: `https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop`
+        avatar: `https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop`,
       };
-      
-      localStorage.setItem('user', JSON.stringify(userData));
+
+      localStorage.setItem("user", JSON.stringify(userData));
       setUser(userData);
       setIsAuthenticated(true);
       return { success: true };
     } catch (error) {
-      return { success: false, error: 'Login failed' };
+      return { success: false, error: "Login failed" };
     }
   };
 
@@ -51,20 +57,20 @@ export function AuthProvider({ children }) {
         id: Date.now(),
         name: name,
         email: email,
-        avatar: `https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop`
+        avatar: `https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop`,
       };
-      
-      localStorage.setItem('user', JSON.stringify(userData));
+
+      localStorage.setItem("user", JSON.stringify(userData));
       setUser(userData);
       setIsAuthenticated(true);
       return { success: true };
     } catch (error) {
-      return { success: false, error: 'Registration failed' };
+      return { success: false, error: "Registration failed" };
     }
   };
 
   const logout = () => {
-    localStorage.removeItem('user');
+    localStorage.removeItem("user");
     setUser(null);
     setIsAuthenticated(false);
   };
@@ -75,7 +81,7 @@ export function AuthProvider({ children }) {
     login,
     register,
     logout,
-    loading
+    loading,
   };
 
   return (

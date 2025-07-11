@@ -21,6 +21,7 @@ import {
   ArcElement,
 } from "chart.js";
 import { Line, Bar, Doughnut } from "react-chartjs-2";
+import { useNavigate } from "react-router-dom";
 
 // Register Chart.js components
 ChartJS.register(
@@ -37,6 +38,7 @@ ChartJS.register(
 
 function Statistic() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { statistics, chartData, loading, error } = useSelector(
     (state) => state.progressLog
   );
@@ -360,7 +362,7 @@ function Statistic() {
                   Bạn cần có gói đăng ký để sử dụng tính năng này
                 </p>
               </div>
-              <button className="ml-auto bg-purple-500/20 text-purple-300 border border-purple-500/30 hover:bg-purple-500/30 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300">
+              <button onClick={() => navigate("/user/membership")} className="ml-auto bg-purple-500/20 text-purple-300 border border-purple-500/30 hover:bg-purple-500/30 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300">
                 Đăng ký ngay
               </button>
             </div>

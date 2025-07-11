@@ -20,6 +20,10 @@ import UserRoute from "./UserRoute";
 import VerifyOTP from "../pages/VerifyOTP";
 import ForgotPassword from "../pages/ForgotPassword";
 import ResetPassword from "../pages/ResetPassword";
+import MembershipPage from "../pages/MembershipPage";
+import PaymentSuccessPage from "../pages/PaymentSuccessPage";
+import PaymentFailedPage from "../pages/PaymentFailedPage";
+import MyMembershipPage from "../pages/MyMembershipPage";
 
 const RootRouter = () => {
   return (
@@ -128,6 +132,42 @@ const RootRouter = () => {
         element={
           <UserRoute>
             <ProgressLog />
+          </UserRoute>
+        }
+      />
+
+      <Route
+        path="/user/membership"
+        element={
+          <UserRoute>
+            <MembershipPage />
+          </UserRoute>
+        }
+      />
+
+      <Route
+        path="/user/payment/success"
+        element={
+          <UserRoute>
+            <PaymentSuccessPage />
+          </UserRoute>
+        }
+      />
+
+      <Route
+        path="/user/payment/failed"
+        element={
+          <UserRoute>
+            <PaymentFailedPage />
+          </UserRoute>
+        }
+      />
+
+      <Route
+        path="/user/my-membership"
+        element={
+          <UserRoute>
+            <MyMembershipPage />
           </UserRoute>
         }
       />

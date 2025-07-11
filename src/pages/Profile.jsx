@@ -30,6 +30,7 @@ import {
 } from "react-icons/io5";
 import api from "../config/axios"; // Adjust the import based on your API setup
 import { useNavigate } from "react-router-dom";
+
 function Profile() {
   const navigate = useNavigate();
   const { user, updateProfile } = useAuth();
@@ -191,7 +192,7 @@ function Profile() {
       setIsLoading(false);
       return;
     }
-
+    
     if (passwordData.currentPassword === passwordData.newPassword) {
       setMessage({
         type: "error",
@@ -326,7 +327,7 @@ function Profile() {
                     <img
                       src={profileData.picture}
                       alt={profileData.name}
-                      className="w-32 h-32 rounded-2xl ring-4 ring-purple-400/50 mx-auto shadow-2xl"
+                      className="w-32 h-32 rounded-2xl ring-4 ring-purple-400/50 mx-auto shadow-2xl object-cover"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-2xl"></div>
                   </div>
@@ -339,9 +340,18 @@ function Profile() {
                   </button>
                 </div>
               </div>
+              {/* --- START: UPDATED MEMBERSHIP SECTION --- */}
+              <div className="mt-8 pt-6 border-t border-white/20 text-center">
+                <button
+                  onClick={() => navigate("/user/my-membership")}
+                  className="gradient-button flex items-center justify-center w-full space-x-2 px-6 py-3 text-base shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
+                >
+                  <IoShieldCheckmark size={18} />
+                  <span>Xem gói thành viên</span>
+                </button>
+              </div>
+              {/* --- END: UPDATED MEMBERSHIP SECTION --- */}
             </div>
-
-            {/* Enhanced Stats */}
             <div
               className="glass-card p-6 mt-6 animate-slide-up glow-effect"
               style={{ animationDelay: "0.1s" }}
@@ -384,13 +394,11 @@ function Profile() {
             </div>
           </div>
 
-          {/* Enhanced Settings Panel */}
           <div className="xl:col-span-3">
             <div
               className="glass-card rounded-3xl overflow-hidden animate-slide-up glow-effect shadow-2xl"
               style={{ animationDelay: "0.2s" }}
             >
-              {/* Enhanced Tabs */}
               <div className="flex bg-white/5 border-b border-white/20">
                 {tabs.map((tab) => (
                   <button
@@ -420,10 +428,7 @@ function Profile() {
                   </button>
                 ))}
               </div>
-
-              {/* Enhanced Tab Content */}
               <div className="p-10">
-                {/* Success/Error Message */}
                 {message.text && (
                   <div
                     className={`mb-8 px-6 py-4 rounded-2xl text-sm backdrop-blur-md animate-slide-up flex items-center space-x-3 shadow-lg ${
@@ -448,8 +453,6 @@ function Profile() {
                     <span className="font-medium">{message.text}</span>
                   </div>
                 )}
-
-                {/* Profile Tab */}
                 {activeTab === "profile" && (
                   <form
                     onSubmit={handleProfileSubmit}
@@ -494,6 +497,7 @@ function Profile() {
                           value={profileData.email}
                           onChange={handleProfileChange}
                           className="input-glass h-14 text-lg"
+
                           disabled
                           readOnly
                         />
@@ -612,8 +616,6 @@ function Profile() {
                     </div>
                   </form>
                 )}
-
-                {/* Password Tab */}
                 {activeTab === "password" && (
                   <form
                     onSubmit={handlePasswordSubmit}
@@ -724,6 +726,7 @@ function Profile() {
                       </button>
                       <button
                         type="submit"
+
                         disabled={isLoading || !hasPasswordChanged()}
                         className={`gradient-button flex items-center space-x-2 px-8 py-4 text-lg shadow-2xl ${
                           isLoading ? "opacity-50 cursor-not-allowed" : ""
@@ -750,7 +753,6 @@ function Profile() {
         </div>
       </div>
 
-      {/* Image URL Modal */}
       {showImageUrlModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in">
           <div className="glass-card p-8 max-w-md w-full mx-4 rounded-2xl animate-slide-up">
