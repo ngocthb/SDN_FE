@@ -5,6 +5,7 @@ import {
   fetchVerifyOTPThunk,
   fetchForgetPasswordThunk,
   fetchResetPasswordThunk,
+  fetchUserProfileThunk,
 } from "./userThunk";
 
 const userSlice = createSlice({
@@ -14,6 +15,7 @@ const userSlice = createSlice({
     loading: false,
     error: null,
     isVerified: false,
+    isAuthChecked: false,
   },
   reducers: {
     logoutUser: (state) => {
@@ -22,6 +24,7 @@ const userSlice = createSlice({
       localStorage.removeItem("userId");
       state.user = null;
       state.isVerified = false;
+      state.isAuthChecked = true;
     },
   },
   extraReducers: (builder) => {
@@ -84,6 +87,24 @@ const userSlice = createSlice({
       .addCase(fetchResetPasswordThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+
+      .addCase(fetchUserProfileThunk.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchUserProfileThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+        state.isVerified = action.payload.status;
+        state.isAuthChecked = true;
+      })
+      .addCase(fetchUserProfileThunk.rejected, (state, action) => {
+        state.loading = false;
+        localStorage.removeItem("token");
+        localStorage.removeItem("role");
+        localStorage.removeItem("userId");
+        state.user = null;
+        state.isAuthChecked = true;
       });
   },
 });

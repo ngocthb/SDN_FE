@@ -23,12 +23,13 @@ import {
   IoFemale,
   IoTrophy,
   IoRibbon,
+  // THÊM MỚI CÁC ICON SAU
+  IoStatsChart,
+  IoChatbubbleEllipses,
+  IoTime,
 } from "react-icons/io5";
 import api from "../config/axios";
 import { useNavigate } from "react-router-dom";
-// KHÔNG CẦN redux cho achievements nữa
-// import { useDispatch, useSelector } from "react-redux";
-// import { fetchMyAchievements } from "../redux/features/achievement/achievementSlice";
 
 // Component con để hiển thị một thành tích (không thay đổi)
 const AchievementCard = ({ icon, name, points, delay }) => (
@@ -55,20 +56,11 @@ const AchievementCard = ({ icon, name, points, delay }) => (
 
 function Profile() {
   const navigate = useNavigate();
-  // const dispatch = useDispatch(); // <-- BỎ ĐI
   const { user } = useAuth();
-
-  // <-- BỎ ĐI: Không cần lấy achievement từ Redux nữa
-  // const {
-  //   myAchievements,
-  //   loading: achievementsLoading,
-  //   error: achievementsError,
-  // } = useSelector((state) => state.achievement);
-
   const [activeTab, setActiveTab] = useState("profile");
-  const [isLoading, setIsLoading] = useState(false); // Dùng cho các hành động submit
-  const [isPageLoading, setIsPageLoading] = useState(true); // <-- THÊM MỚI: Dùng cho việc tải dữ liệu ban đầu
-  const [pageError, setPageError] = useState(null); // <-- THÊM MỚI: Dùng cho lỗi tải trang
+  const [isLoading, setIsLoading] = useState(false);
+  const [isPageLoading, setIsPageLoading] = useState(true);
+  const [pageError, setPageError] = useState(null);
   const [message, setMessage] = useState({ type: "", text: "" });
   const [showImageUrlModal, setShowImageUrlModal] = useState(false);
   const [tempImageUrl, setTempImageUrl] = useState("");
@@ -80,7 +72,7 @@ function Profile() {
     gender: null,
     dateOfBirth: "",
     picture: "",
-    grantedAchievements: [], // <-- THÊM MỚI: Lưu thành tích tại đây
+    grantedAchievements: [],
   });
 
   const [passwordData, setPasswordData] = useState({
@@ -125,7 +117,6 @@ function Profile() {
     },
   ];
 
-  // THAY ĐỔI: Hàm này giờ là nguồn dữ liệu duy nhất
   const fetchDataUser = async () => {
     setIsPageLoading(true);
     setPageError(null);
@@ -142,7 +133,7 @@ function Profile() {
             userData.picture ||
             "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
           dateOfBirth: userData.dateOfBirth || "",
-          grantedAchievements: userData.grantedAchievements || [], // <-- THÊM MỚI: Cập nhật thành tích
+          grantedAchievements: userData.grantedAchievements || [],
         });
       }
     } catch (error) {
@@ -155,8 +146,7 @@ function Profile() {
 
   useEffect(() => {
     fetchDataUser();
-    // dispatch(fetchMyAchievements()); // <-- BỎ ĐI
-  }, []); // dispatch không còn là dependency
+  }, []);
 
   // ... các hàm handler khác giữ nguyên không đổi ...
   const handleProfileChange = (e) => {
@@ -297,7 +287,6 @@ function Profile() {
     <div className="min-h-screen bg-gradient-to-br from-dark-900 via-purple-900/20 to-pink-900/20">
       <Navbar />
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* ... Header và Profile Card bên trái giữ nguyên ... */}
         <div className="mb-12 text-center animate-fade-in">
           <h1 className="text-5xl font-bold text-white mb-4 gradient-text">
             Profile Settings
@@ -334,6 +323,48 @@ function Profile() {
                 </button>
               </div>
             </div>
+
+            {/* --- ACTIVITY OVERVIEW ĐÃ ĐƯỢC THÊM VÀO ĐÂY --- */}
+            <div
+              className="glass-card p-6 mt-6 animate-slide-up glow-effect"
+              style={{ animationDelay: "0.1s" }}
+            >
+              <h4 className="text-lg font-semibold text-white mb-6 flex items-center space-x-2">
+                <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
+                  <IoStatsChart size={16} color="white" />
+                </div>
+                <span>Activity Overview</span>
+              </h4>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center p-3 bg-white/5 rounded-xl hover:bg-white/10 transition-colors">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+                      <IoChatbubbleEllipses size={14} color="white" />
+                    </div>
+                    <span className="text-white/70 text-sm">Messages Sent</span>
+                  </div>
+                  <span className="text-purple-400 font-bold">1,234</span>
+                </div>
+                <div className="flex justify-between items-center p-3 bg-white/5 rounded-xl hover:bg-white/10 transition-colors">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                      <IoPeople size={14} color="white" />
+                    </div>
+                    <span className="text-white/70 text-sm">Active Chats</span>
+                  </div>
+                  <span className="text-pink-400 font-bold">12</span>
+                </div>
+                <div className="flex justify-between items-center p-3 bg-white/5 rounded-xl hover:bg-white/10 transition-colors">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-gradient-to-r from-pink-500 to-orange-500 rounded-lg flex items-center justify-center">
+                      <IoTime size={14} color="white" />
+                    </div>
+                    <span className="text-white/70 text-sm">Online Hours</span>
+                  </div>
+                  <span className="text-orange-400 font-bold">156h</span>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className="xl:col-span-3">
@@ -342,7 +373,6 @@ function Profile() {
               style={{ animationDelay: "0.2s" }}
             >
               <div className="flex bg-white/5 border-b border-white/20">
-                {/* ... Tabs giữ nguyên ... */}
                 {tabs.map((tab) => (
                   <button
                     key={tab.id}
@@ -373,7 +403,6 @@ function Profile() {
               </div>
 
               <div className="p-10">
-                {/* ... Message và tab Profile & Password giữ nguyên ... */}
                 {message.text && (
                   <div
                     className={`mb-8 px-6 py-4 rounded-2xl text-sm backdrop-blur-md animate-slide-up flex items-center space-x-3 shadow-lg ${
@@ -398,6 +427,7 @@ function Profile() {
                     <span className="font-medium">{message.text}</span>
                   </div>
                 )}
+
                 {activeTab === "profile" && (
                   <form
                     onSubmit={handleProfileSubmit}
@@ -510,7 +540,6 @@ function Profile() {
                   </form>
                 )}
 
-                {/* THAY ĐỔI: Logic hiển thị tab Achievements */}
                 {activeTab === "achievements" && (
                   <div className="animate-fade-in">
                     <h3 className="text-2xl font-bold text-white mb-2">
@@ -519,7 +548,6 @@ function Profile() {
                     <p className="text-white/60 mb-8">
                       A collection of all the milestones you've reached.
                     </p>
-
                     {isPageLoading && (
                       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                         {[...Array(4)].map((_, i) => (
@@ -530,13 +558,11 @@ function Profile() {
                         ))}
                       </div>
                     )}
-
                     {pageError && (
                       <div className="bg-red-500/20 border border-red-500/30 text-red-300 p-6 rounded-2xl text-center">
                         <p>{pageError}</p>
                       </div>
                     )}
-
                     {!isPageLoading &&
                       !pageError &&
                       (profileData.grantedAchievements.length > 0 ? (
@@ -662,7 +688,6 @@ function Profile() {
           </div>
         </div>
       </div>
-      {/* ... Modal giữ nguyên ... */}
       {showImageUrlModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in">
           <div className="glass-card p-8 max-w-md w-full mx-4 rounded-2xl animate-slide-up">
