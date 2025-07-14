@@ -47,12 +47,26 @@ function Login() {
       if (!result.payload.status) {
         navigate("/verify-otp", { state: { email: formData.email } });
       } else {
-        if (role === 'admin') {
-          navigate('/admin/dashboard');
-        } else if (role === 'coach') {
-          navigate('/messenger');
-        } else {
-          navigate('/home');
+        const user = result.payload;
+        if (!user.isAdmin && !user.isCoach) {
+          try {
+            const subscriptionResult = await dispatch(getMySubscription());
+
+            if (subscriptionResult.payload?.data?.hasActiveSubscription) {
+              navigate("/statistics");
+            } else {
+              navigate("/home");
+            }
+          } catch (error) {
+            navigate("/home");
+          }
+        } else if (user.isCoach) {
+          navigate("/messenger");
+        } else if (user.isAdmin) {
+          navigate("/admin/dashboard");
+        }
+         else {
+          navigate("/home");
         }
       }
     }
@@ -153,9 +167,8 @@ function Login() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className={`w-full gradient-button flex items-center justify-center gap-2 ${
-                  isLoading ? "opacity-50 cursor-not-allowed" : ""
-                }`}
+                className={`w-full gradient-button flex items-center justify-center gap-2 ${isLoading ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
               >
                 {isLoading ? (
                   <svg
