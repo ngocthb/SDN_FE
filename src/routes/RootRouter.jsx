@@ -24,6 +24,7 @@ import MembershipPage from "../pages/MembershipPage";
 import PaymentSuccessPage from "../pages/PaymentSuccessPage";
 import PaymentFailedPage from "../pages/PaymentFailedPage";
 import MyMembershipPage from "../pages/MyMembershipPage";
+import BlogPage from "../pages/BlogPage";
 
 const RootRouter = () => {
   return (
@@ -171,7 +172,18 @@ const RootRouter = () => {
           </UserRoute>
         }
       />
+
+       <Route
+        path="/blog"
+        element={
+          <UserRoute>
+            <BlogPage />
+          </UserRoute>
+        }
+      />
     </Routes>
+
+    
   );
 };
 

@@ -10,6 +10,10 @@ import subscriptionReducer from "./features/subscription/subscriptionSlice";
 import quitPlanReducer from "./features/quitPlan/quitPlanSlice";
 import progressLogReducer from "./features/progressLog/progressLogSlice";
 import membershipReducer from "./features/userMembership/userMembershipSlice";
+import achievementReducer from "./features/achievement/achievementSlice";
+import blogReducer from "./features/blog/blogSlice";
+import commentReducer from "./features/comment/commentSlice"
+
 const rootReducer = combineReducers({
   user: userReducer,
   coach: coachReducer,
@@ -19,6 +23,9 @@ const rootReducer = combineReducers({
   quitPlan: quitPlanReducer,
   progressLog: progressLogReducer,
   membership: membershipReducer,
+  achievement: achievementReducer,
+  blog: blogReducer,
+  comment: commentReducer
 });
 
 export default rootReducer;
