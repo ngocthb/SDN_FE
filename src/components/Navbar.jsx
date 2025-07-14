@@ -1,19 +1,24 @@
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { IoHomeOutline, IoLogOutOutline, IoSparklesOutline } from 'react-icons/io5';
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import {
+  IoHomeOutline,
+  IoLogOutOutline,
+  IoSparklesOutline,
+} from "react-icons/io5";
 
 function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const token = localStorage.getItem('token');
-  const userName = localStorage.getItem('userName');
-  const userAvatar = localStorage.getItem('userAvatar');
+  const token = localStorage.getItem("token");
+  const userName = localStorage.getItem("userName");
+  const userAvatar = localStorage.getItem("userAvatar");
+  const role = localStorage.getItem("role");
 
   const isActive = (path) => location.pathname === path;
 
   const handleLogout = () => {
     localStorage.clear();
-    navigate('/login');
+    navigate("/login");
   };
 
   return (
@@ -22,21 +27,80 @@ function Navbar() {
         <div className="flex justify-between items-center h-16">
           {/* Left Side */}
           <div className="flex items-center space-x-8">
-            <Link to="/home" className="text-2xl font-bold gradient-text flex items-center gap-2">
+            <Link
+              to="/home"
+              className="text-2xl font-bold gradient-text flex items-center gap-2"
+            >
               <IoSparklesOutline className="text-purple-400 text-2xl" />
-              ChatFlow
+              Smoking Cessation PlatForm
             </Link>
             <div className="hidden md:flex space-x-1">
-              <Link
-                to="/home"
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${isActive('/home')
-                  ? 'bg-purple-500/20 text-purple-300 shadow-lg shadow-purple-500/25'
-                  : 'text-white/70 hover:text-white hover:bg-white/10'
+              {role === "user" ? (
+                <>
+                  <Link
+                    to="/statistics"
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
+                      isActive("/statistics")
+                        ? "bg-purple-500/20 text-purple-300 shadow-lg shadow-purple-500/25"
+                        : "text-white/70 hover:text-white hover:bg-white/10"
+                    }`}
+                  >
+                    Thống kê
+                  </Link>
+                  <Link
+                    to="/smoking-status"
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
+                      isActive("/smoking-status")
+                        ? "bg-purple-500/20 text-purple-300 shadow-lg shadow-purple-500/25"
+                        : "text-white/70 hover:text-white hover:bg-white/10"
+                    }`}
+                  >
+                    Tình trạng
+                  </Link>
+                  <Link
+                    to="/quit-plan"
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
+                      isActive("/quit-plan")
+                        ? "bg-purple-500/20 text-purple-300 shadow-lg shadow-purple-500/25"
+                        : "text-white/70 hover:text-white hover:bg-white/10"
+                    }`}
+                  >
+                    Kế hoạch
+                  </Link>
+                  <Link
+                    to="/progress-log"
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
+                      isActive("/progress-log")
+                        ? "bg-purple-500/20 text-purple-300 shadow-lg shadow-purple-500/25"
+                        : "text-white/70 hover:text-white hover:bg-white/10"
+                    }`}
+                  >
+                    Ghi nhận
+                  </Link>
+                  <Link
+                    to="/blog"
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
+                      isActive("/blog")
+                        ? "bg-purple-500/20 text-purple-300 shadow-lg shadow-purple-500/25"
+                        : "text-white/70 hover:text-white hover:bg-white/10"
+                    }`}
+                  >
+                    Blog
+                  </Link>
+                </>
+              ) : (
+                <Link
+                  to="/home"
+                  className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
+                    isActive("/home")
+                      ? "bg-purple-500/20 text-purple-300 shadow-lg shadow-purple-500/25"
+                      : "text-white/70 hover:text-white hover:bg-white/10"
                   }`}
-              >
-                <IoHomeOutline />
-                Home
-              </Link>
+                >
+                  <IoHomeOutline />
+                  Home
+                </Link>
+              )}
             </div>
           </div>
 
@@ -51,7 +115,10 @@ function Navbar() {
               </Link>
             ) : (
               <>
-                <div className="flex items-center space-x-3 glass-card px-4 py-2  cursor-pointer" onClick={(() => navigate('/profile'))}>
+                <div
+                  className="flex items-center space-x-3 glass-card px-4 py-2  cursor-pointer"
+                  onClick={() => navigate("/profile")}
+                >
                   {userAvatar ? (
                     <img
                       src={userAvatar}

@@ -5,6 +5,10 @@ import Register from "../pages/Register";
 import Homepage from "../pages/Homepage";
 import Messenger from "../pages/Messenger";
 import CheckResetOTP from "../pages/CheckResetOTP";
+import SmokingStatus from "../pages/user/SmokingStatus";
+import Statistics from "../pages/user/Statistic";
+import QuitPlan from "../pages/user/QuitPlan";
+import ProgressLog from "../pages/user/ProgressLog";
 
 import CoachRoute from "./CoachRoute";
 import PrivateRoute from "./PrivateRoute";
@@ -18,9 +22,15 @@ import AdminDashboard from "../pages/admin/dashboard/AdminDashboard";
 import AdminMembershipPage from "../pages/admin/membership/AdminMembershipPage";
 
 import AuthRoute from "./AuthRoute";
+import UserRoute from "./UserRoute";
 import VerifyOTP from "../pages/VerifyOTP";
 import ForgotPassword from "../pages/ForgotPassword";
 import ResetPassword from "../pages/ResetPassword";
+import MembershipPage from "../pages/MembershipPage";
+import PaymentSuccessPage from "../pages/PaymentSuccessPage";
+import PaymentFailedPage from "../pages/PaymentFailedPage";
+import MyMembershipPage from "../pages/MyMembershipPage";
+import BlogPage from "../pages/BlogPage";
 
 const RootRouter = () => {
   return (
@@ -107,6 +117,38 @@ const RootRouter = () => {
           </AdminRoute>
         }
       />
+      <Route
+        path="/smoking-status"
+        element={
+          <UserRoute>
+            <SmokingStatus />
+          </UserRoute>
+        }
+      />
+      <Route
+        path="/statistics"
+        element={
+          <UserRoute>
+            <Statistics />
+          </UserRoute>
+        }
+      />
+      <Route
+        path="/quit-plan"
+        element={
+          <UserRoute>
+            <QuitPlan />
+          </UserRoute>
+        }
+      />
+      <Route
+        path="/progress-log"
+        element={
+          <UserRoute>
+            <ProgressLog />
+          </UserRoute>
+        }
+      />
 
       <Route
         path="/admin/ratings"
@@ -132,7 +174,53 @@ const RootRouter = () => {
           </AdminRoute>
         }
       />
+      <Route
+        path="/user/membership"
+        element={
+          <UserRoute>
+            <MembershipPage />
+          </UserRoute>
+        }
+      />
+
+      <Route
+        path="/user/payment/success"
+        element={
+          <UserRoute>
+            <PaymentSuccessPage />
+          </UserRoute>
+        }
+      />
+
+      <Route
+        path="/user/payment/failed"
+        element={
+          <UserRoute>
+            <PaymentFailedPage />
+          </UserRoute>
+        }
+      />
+
+      <Route
+        path="/user/my-membership"
+        element={
+          <UserRoute>
+            <MyMembershipPage />
+          </UserRoute>
+        }
+      />
+
+      <Route
+        path="/blog"
+        element={
+          <UserRoute>
+            <BlogPage />
+          </UserRoute>
+        }
+      />
     </Routes>
+
+
   );
 };
 
