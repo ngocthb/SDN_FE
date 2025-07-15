@@ -18,6 +18,7 @@ import {
 import { LuCrown } from "react-icons/lu";
 
 import api from "../config/axios";
+import { toast } from "react-toastify";
 
 // Membership Badge Component - Simplified to show name only
 const MembershipBadge = ({ membershipType, membershipName, size = "sm" }) => {
@@ -151,7 +152,7 @@ const RatingForm = ({
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (formData.rating === 0) {
-      alert("Please select a rating");
+      toast.error("Please select a rating");
       return;
     }
 
@@ -160,7 +161,7 @@ const RatingForm = ({
       await onSubmit(formData);
     } catch (error) {
       console.error("Error submitting rating:", error);
-      alert("Failed to submit rating. Please try again.");
+      toast.error("Failed to submit rating. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -698,7 +699,7 @@ const UserRatingPage = () => {
     } catch (error) {
       console.error("❌ Error fetching data:", error);
       if (error.response?.status === 401) {
-        alert("Please login to view your ratings");
+        toast.error("Please login to view your ratings");
       }
     } finally {
       setLoading(false);
@@ -709,7 +710,7 @@ const UserRatingPage = () => {
     try {
       const response = await api.post("/ratings", formData);
       if (response.data.status === "OK") {
-        alert(response.data.message);
+        toast.success(response.data.message);
         setActiveTab("my-ratings");
         checkCanRateAndFetchRatings();
       }
@@ -725,7 +726,7 @@ const UserRatingPage = () => {
     try {
       const response = await api.put(`/ratings/${editingRating._id}`, formData);
       if (response.data.status === "OK") {
-        alert(response.data.message);
+        toast.success(response.data.message);
         setEditingRating(null);
         setActiveTab("my-ratings");
         checkCanRateAndFetchRatings();
@@ -748,15 +749,15 @@ const UserRatingPage = () => {
       try {
         const response = await api.delete(`/ratings/${ratingId}`);
         if (response.data.status === "OK") {
-          alert(response.data.message);
+          toast.success(response.data.message);
           checkCanRateAndFetchRatings();
         }
       } catch (error) {
         console.error("Error deleting rating:", error);
         if (error.response?.data?.message) {
-          alert(error.response.data.message);
+          toast.error(error.response.data.message);
         } else {
-          alert("Failed to delete rating. Please try again.");
+          toast.error("Failed to delete rating. Please try again.");
         }
       }
     }
