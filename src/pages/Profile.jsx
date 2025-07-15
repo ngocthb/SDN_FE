@@ -189,13 +189,17 @@ function Profile() {
         picture: profileData?.picture || null,
         gender: profileData.gender,
       };
+
       const response = await api.put("user/update-profile", updateData);
       if (response.data && response.data.data) {
+        localStorage.setItem("userAvatar", profileData?.picture);
+        localStorage.setItem("userName", profileData.name);
         setProfileData((prev) => ({
           ...prev,
           ...response.data.data,
           email: prev.email,
         }));
+
         setMessage({ type: "success", text: "Profile updated successfully!" });
       } else {
         setMessage({ type: "error", text: "Failed to update profile." });
@@ -324,47 +328,7 @@ function Profile() {
               </div>
             </div>
 
-            {/* --- ACTIVITY OVERVIEW ĐÃ ĐƯỢC THÊM VÀO ĐÂY --- */}
-            <div
-              className="glass-card p-6 mt-6 animate-slide-up glow-effect"
-              style={{ animationDelay: "0.1s" }}
-            >
-              <h4 className="text-lg font-semibold text-white mb-6 flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
-                  <IoStatsChart size={16} color="white" />
-                </div>
-                <span>Activity Overview</span>
-              </h4>
-              <div className="space-y-4">
-                <div className="flex justify-between items-center p-3 bg-white/5 rounded-xl hover:bg-white/10 transition-colors">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
-                      <IoChatbubbleEllipses size={14} color="white" />
-                    </div>
-                    <span className="text-white/70 text-sm">Messages Sent</span>
-                  </div>
-                  <span className="text-purple-400 font-bold">1,234</span>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-white/5 rounded-xl hover:bg-white/10 transition-colors">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
-                      <IoPeople size={14} color="white" />
-                    </div>
-                    <span className="text-white/70 text-sm">Active Chats</span>
-                  </div>
-                  <span className="text-pink-400 font-bold">12</span>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-white/5 rounded-xl hover:bg-white/10 transition-colors">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-gradient-to-r from-pink-500 to-orange-500 rounded-lg flex items-center justify-center">
-                      <IoTime size={14} color="white" />
-                    </div>
-                    <span className="text-white/70 text-sm">Online Hours</span>
-                  </div>
-                  <span className="text-orange-400 font-bold">156h</span>
-                </div>
-              </div>
-            </div>
+
           </div>
 
           <div className="xl:col-span-3">
@@ -377,18 +341,16 @@ function Profile() {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`flex-1 px-8 py-6 text-sm font-medium transition-all duration-300 flex items-center justify-center space-x-3 relative group ${
-                      activeTab === tab.id
-                        ? "text-white"
-                        : "text-white/70 hover:text-white hover:bg-white/5"
-                    }`}
+                    className={`flex-1 px-8 py-6 text-sm font-medium transition-all duration-300 flex items-center justify-center space-x-3 relative group ${activeTab === tab.id
+                      ? "text-white"
+                      : "text-white/70 hover:text-white hover:bg-white/5"
+                      }`}
                   >
                     <div
-                      className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 ${
-                        activeTab === tab.id
-                          ? `bg-gradient-to-r ${tab.gradient} shadow-lg`
-                          : "bg-white/10 group-hover:bg-white/20"
-                      }`}
+                      className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 ${activeTab === tab.id
+                        ? `bg-gradient-to-r ${tab.gradient} shadow-lg`
+                        : "bg-white/10 group-hover:bg-white/20"
+                        }`}
                     >
                       <tab.icon size={20} color="white" />
                     </div>
@@ -405,18 +367,16 @@ function Profile() {
               <div className="p-10">
                 {message.text && (
                   <div
-                    className={`mb-8 px-6 py-4 rounded-2xl text-sm backdrop-blur-md animate-slide-up flex items-center space-x-3 shadow-lg ${
-                      message.type === "success"
-                        ? "bg-green-500/20 border border-green-500/30 text-green-300"
-                        : "bg-red-500/20 border border-red-500/30 text-red-300"
-                    }`}
+                    className={`mb-8 px-6 py-4 rounded-2xl text-sm backdrop-blur-md animate-slide-up flex items-center space-x-3 shadow-lg ${message.type === "success"
+                      ? "bg-green-500/20 border border-green-500/30 text-green-300"
+                      : "bg-red-500/20 border border-red-500/30 text-red-300"
+                      }`}
                   >
                     <div
-                      className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                        message.type === "success"
-                          ? "bg-green-500/30"
-                          : "bg-red-500/30"
-                      }`}
+                      className={`w-8 h-8 rounded-full flex items-center justify-center ${message.type === "success"
+                        ? "bg-green-500/30"
+                        : "bg-red-500/30"
+                        }`}
                     >
                       {message.type === "success" ? (
                         <IoCheckmarkCircle size={18} />
@@ -473,8 +433,8 @@ function Profile() {
                             profileData.gender === null
                               ? ""
                               : profileData.gender
-                              ? "female"
-                              : "male"
+                                ? "female"
+                                : "male"
                           }
                           onChange={handleGenderChange}
                           options={genderOptions}
@@ -520,9 +480,8 @@ function Profile() {
                       <button
                         type="submit"
                         disabled={isLoading}
-                        className={`gradient-button flex items-center space-x-2 px-8 py-4 text-lg ${
-                          isLoading ? "opacity-50 cursor-not-allowed" : ""
-                        }`}
+                        className={`gradient-button flex items-center space-x-2 px-8 py-4 text-lg ${isLoading ? "opacity-50 cursor-not-allowed" : ""
+                          }`}
                       >
                         {isLoading ? (
                           <>
@@ -662,11 +621,10 @@ function Profile() {
                       <button
                         type="submit"
                         disabled={isLoading || !hasPasswordChanged()}
-                        className={`gradient-button flex items-center space-x-2 px-8 py-4 text-lg ${
-                          isLoading || !hasPasswordChanged()
-                            ? "opacity-50 cursor-not-allowed"
-                            : ""
-                        }`}
+                        className={`gradient-button flex items-center space-x-2 px-8 py-4 text-lg ${isLoading || !hasPasswordChanged()
+                          ? "opacity-50 cursor-not-allowed"
+                          : ""
+                          }`}
                       >
                         {isLoading ? (
                           <>
@@ -726,9 +684,8 @@ function Profile() {
               <button
                 onClick={handleImageUrlSubmit}
                 disabled={!tempImageUrl.trim()}
-                className={`flex-1 gradient-button py-3 ${
-                  !tempImageUrl.trim() ? "opacity-50 cursor-not-allowed" : ""
-                }`}
+                className={`flex-1 gradient-button py-3 ${!tempImageUrl.trim() ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
               >
                 Update
               </button>

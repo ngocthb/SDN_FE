@@ -17,7 +17,7 @@ function AdminMembershipPage() {
 
   const fetchMemberships = async () => {
     try {
-      const response = await api.get("/admin/membership");
+      const response = await api.get("/membership");
       if (response.data.status === "OK") {
         const memberships = response.data.data.map((membership) => ({
           ...membership,
@@ -129,11 +129,10 @@ function AdminMembershipPage() {
                   </td>
                   <td className="py-2">{membership.duration} days</td>
                   <td
-                    className={`py-2 font-bold ${
-                      membership.status === "Active"
+                    className={`py-2 font-bold ${membership.status === "Active"
                         ? "text-green-400"
                         : "text-red-400"
-                    }`}
+                      }`}
                   >
                     {membership.status}
                   </td>

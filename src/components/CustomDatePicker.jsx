@@ -123,6 +123,7 @@ function CustomDatePicker({ value, onChange, placeholder, icon, gradient }) {
                     <div className="p-4 border-b border-white/20 bg-gradient-to-r from-purple-500/20 to-pink-500/20">
                         <div className="flex items-center justify-between">
                             <button
+                                type="button"
                                 onClick={() => navigateMonth(-1)}
                                 className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
                             >
@@ -136,6 +137,7 @@ function CustomDatePicker({ value, onChange, placeholder, icon, gradient }) {
                             </div>
 
                             <button
+                                type="button"
                                 onClick={() => navigateMonth(1)}
                                 className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
                             >

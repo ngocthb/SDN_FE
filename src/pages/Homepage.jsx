@@ -104,10 +104,10 @@ const Leaderboard = () => {
           index < 3
             ? rankStyles[index]
             : {
-                bg: "bg-white/10",
-                border: "border-transparent",
-                iconColor: "text-purple-400",
-              };
+              bg: "bg-white/10",
+              border: "border-transparent",
+              iconColor: "text-purple-400",
+            };
 
         return (
           <div
@@ -187,24 +187,7 @@ function Homepage() {
     },
   ];
 
-  const testimonials = [
-    {
-      quote:
-        "Nhờ có cộng đồng và sự theo dõi sát sao, tôi đã bỏ thuốc được 6 tháng. Cảm ơn nền tảng rất nhiều!",
-      name: "Anh Minh Tuấn",
-      detail: "Đã cai thuốc được 6 tháng",
-      avatar:
-        "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop",
-    },
-    {
-      quote:
-        "Các công cụ đối phó với cơn thèm thuốc thực sự hiệu quả. Mỗi khi cảm thấy yếu lòng, tôi lại mở app ra.",
-      name: "Chị Lan Anh",
-      detail: "Đã cai thuốc được 92 ngày",
-      avatar:
-        "https://images.pexels.com/photos/1310522/pexels-photo-1310522.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop",
-    },
-  ];
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-dark-900 via-purple-900/20 to-pink-900/20 text-white">
@@ -254,16 +237,7 @@ function Homepage() {
           </div>
         </section>
 
-        <section className="py-20">
-          <h2 className="text-3xl font-bold text-center mb-12">
-            Người Dùng Nói Về Chúng Tôi
-          </h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {testimonials.map((testimonial, index) => (
-              <TestimonialCard key={index} {...testimonial} />
-            ))}
-          </div>
-        </section>
+
 
         <section className="py-20">
           <div className="glass-card p-12 rounded-2xl text-center glow-effect">
