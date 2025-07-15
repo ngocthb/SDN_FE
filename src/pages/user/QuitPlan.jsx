@@ -181,34 +181,131 @@ function QuitPlan() {
   };
 
   // Cập nhật handleUpdatePlan function trong QuitPlan.jsx
+  // const handleUpdatePlan = async () => {
+  //   if (!currentPlan?.plan?._id) return;
+
+  //   // Validate subscription limits
+  //   if (!validateSubscriptionLimits(planFormData.customStages)) {
+  //     return;
+  //   }
+
+  //   try {
+  //     // ✅ QUAN TRỌNG: Gửi đúng cấu trúc data mà backend expect
+  //     const updateData = {
+  //       reason: planFormData.reason,
+  //       stages: planFormData.customStages.map((stage) => ({
+  //         // Giữ nguyên _id nếu có (để backend biết đây là existing stage)
+  //         ...(stage._id && { _id: stage._id }),
+  //         title: stage.title,
+  //         description: stage.description,
+  //         daysToComplete: stage.daysToComplete,
+  //         // Không gửi orderNumber - để backend tự xử lý
+  //       })),
+  //     };
+
+  //     console.log("🔍 Update data being sent:", updateData);
+  //     console.log("📊 Stages count:", updateData.stages.length);
+  //     console.log(
+  //       "🆔 Stage IDs:",
+  //       updateData.stages.filter((s) => s._id).map((s) => s._id)
+  //     );
+
+  //     await dispatch(
+  //       updateQuitPlan({
+  //         planId: currentPlan.plan._id,
+  //         updates: updateData,
+  //       })
+  //     ).unwrap();
+  //   } catch (error) {
+  //     console.error("Error updating plan:", error);
+  //     // Error sẽ được handle ở useEffect với error state từ Redux
+  //   }
+  // };
+
+  // Trong QuitPlan.jsx - handleUpdatePlan function
+  // ✅ SỬA LẠI handleUpdatePlan trong QuitPlan.jsx
   const handleUpdatePlan = async () => {
     if (!currentPlan?.plan?._id) return;
 
-    // Validate subscription limits
     if (!validateSubscriptionLimits(planFormData.customStages)) {
       return;
     }
 
     try {
-      // ✅ QUAN TRỌNG: Gửi đúng cấu trúc data mà backend expect
+      // ✅ QUAN TRỌNG: Gửi TẤT CẢ STAGES bao gồm cả completed stages
+      // Đảm bảo completed stages được bao gồm để tránh bị coi là "xóa"
+      const allStages = [];
+
+      // Lấy tất cả stages từ currentStage (bao gồm completed)
+      const existingStages = currentStage?.allStagesWithProgress || [];
+
+      // Tạo map để dễ tìm kiếm
+      const formStagesMap = new Map();
+      planFormData.customStages.forEach((stage) => {
+        if (stage._id) {
+          formStagesMap.set(stage._id, stage);
+        }
+      });
+
+      // Thêm tất cả existing stages (completed, in_progress, upcoming)
+      existingStages.forEach((existingStage) => {
+        if (formStagesMap.has(existingStage._id)) {
+          // Stage có trong form - sử dụng dữ liệu từ form
+          const formStage = formStagesMap.get(existingStage._id);
+          allStages.push({
+            _id: existingStage._id,
+            title: formStage.title,
+            description: formStage.description,
+            daysToComplete: formStage.daysToComplete,
+          });
+        } else {
+          // Stage không có trong form - giữ nguyên dữ liệu cũ
+          // (Chỉ áp dụng cho completed và in_progress stages)
+          if (
+            existingStage.status === "completed" ||
+            existingStage.status === "in_progress"
+          ) {
+            allStages.push({
+              _id: existingStage._id,
+              title: existingStage.title,
+              description: existingStage.description,
+              daysToComplete: existingStage.daysToComplete,
+            });
+          }
+          // Không thêm upcoming stages không có trong form = xóa chúng
+        }
+      });
+
+      // Thêm các stages mới (không có _id)
+      planFormData.customStages.forEach((stage) => {
+        if (!stage._id) {
+          allStages.push({
+            title: stage.title,
+            description: stage.description,
+            daysToComplete: stage.daysToComplete,
+          });
+        }
+      });
+
       const updateData = {
         reason: planFormData.reason,
-        stages: planFormData.customStages.map((stage) => ({
-          // Giữ nguyên _id nếu có (để backend biết đây là existing stage)
-          ...(stage._id && { _id: stage._id }),
-          title: stage.title,
-          description: stage.description,
-          daysToComplete: stage.daysToComplete,
-          // Không gửi orderNumber - để backend tự xử lý
-        })),
+        stages: allStages,
       };
 
-      console.log("🔍 Update data being sent:", updateData);
-      console.log("📊 Stages count:", updateData.stages.length);
       console.log(
-        "🆔 Stage IDs:",
-        updateData.stages.filter((s) => s._id).map((s) => s._id)
+        "🔍 Frontend debug - All stages including completed:",
+        updateData.stages
       );
+      console.log("📊 Stages breakdown:", {
+        total: updateData.stages.length,
+        withId: updateData.stages.filter((s) => s._id).length,
+        withoutId: updateData.stages.filter((s) => !s._id).length,
+        completed: existingStages.filter((s) => s.status === "completed")
+          .length,
+        inProgress: existingStages.filter((s) => s.status === "in_progress")
+          .length,
+        upcoming: existingStages.filter((s) => s.status === "upcoming").length,
+      });
 
       await dispatch(
         updateQuitPlan({
@@ -216,9 +313,14 @@ function QuitPlan() {
           updates: updateData,
         })
       ).unwrap();
+
+      setShowUpdateModal(false);
+
+      // Refresh data
+      await dispatch(getCurrentPlan());
+      await dispatch(getCurrentStage());
     } catch (error) {
-      console.error("Error updating plan:", error);
-      // Error sẽ được handle ở useEffect với error state từ Redux
+      console.error("❌ Frontend error:", error);
     }
   };
 
