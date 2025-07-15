@@ -169,17 +169,17 @@ const AdminDashboard = () => {
     ? [
         {
           name: "Active",
-          value: membershipStats.statusDistribution.active,
+          value: membershipStats.statusDistribution.active || 0,
           color: COLORS[0],
         },
         {
           name: "Expired",
-          value: membershipStats.statusDistribution.expired,
+          value: membershipStats.statusDistribution.expired || 0,
           color: COLORS[1],
         },
         {
           name: "Cancelled",
-          value: membershipStats.statusDistribution.cancelled,
+          value: membershipStats.statusDistribution.cancelled || 0,
           color: COLORS[2],
         },
       ].filter((item) => item.value > 0)
