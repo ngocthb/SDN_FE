@@ -15,6 +15,8 @@ import {
 } from "react-icons/io5";
 import { fetchLeaderboard } from "../redux/features/achievement/achievementSlice";
 import { getMySubscription } from "../redux/features/subscription/subscriptionSlice";
+import UserRatingPage from "../components/Rating";
+import FeedbackComponent from "../components/Feedback";
 
 const FeatureCard = ({ icon, title, description, gradient }) => (
   <div className="glass-card p-6 text-center animate-slide-up glow-effect">
@@ -128,7 +130,7 @@ const Leaderboard = () => {
               <div className="ml-4 min-w-0">
                 <p className="font-semibold text-white truncate">{user.name}</p>
                 <p className="text-sm text-white/60">
-                  {user.grantedAchievements.length} thành tựu
+                  {user.grantedAchievements?.length || 0} thành tựu
                 </p>
               </div>
             </div>
@@ -292,8 +294,14 @@ function Homepage() {
       )}
 
       <ChatPopup isOpen={isChatOpen} onClose={handleCloseChatPopup} />
-      {/* <RatingPage />
-      <FeedbackPage /> */}
+
+      {/* Chỉ hiển thị UserRatingPage và FeedbackComponent khi đã đăng nhập */}
+      {token && (
+        <>
+          <UserRatingPage />
+          <FeedbackComponent />
+        </>
+      )}
     </div>
   );
 }

@@ -848,6 +848,9 @@ const FeedbackComponent = () => {
   const [filters, setFilters] = useState({ status: "", type: "" });
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) return; // Nếu chưa login thì không gọi API
+
     fetchMyFeedbacks();
   }, [filters, pagination.page]);
 
