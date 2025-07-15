@@ -18,6 +18,7 @@ import {
 import { LuCrown } from "react-icons/lu";
 
 import api from "../config/axios";
+import { toast } from "react-toastify";
 
 // Membership Badge Component - Simplified to show name only
 const MembershipBadge = ({ membershipType, membershipName, size = "sm" }) => {
@@ -32,19 +33,19 @@ const MembershipBadge = ({ membershipType, membershipName, size = "sm" }) => {
 
   const config = isPremium
     ? {
-        icon: <LuCrown />,
-        color: "text-purple-400",
-        bgColor: "bg-purple-500/20",
-        borderColor: "border-purple-500/50",
-        label: displayText,
-      }
+      icon: <LuCrown />,
+      color: "text-purple-400",
+      bgColor: "bg-purple-500/20",
+      borderColor: "border-purple-500/50",
+      label: displayText,
+    }
     : {
-        icon: <IoCheckmarkCircleOutline />,
-        color: "text-gray-400",
-        bgColor: "bg-gray-500/20",
-        borderColor: "border-gray-500/50",
-        label: displayText,
-      };
+      icon: <IoCheckmarkCircleOutline />,
+      color: "text-gray-400",
+      bgColor: "bg-gray-500/20",
+      borderColor: "border-gray-500/50",
+      label: displayText,
+    };
 
   const sizeClasses = size === "sm" ? "text-xs px-2 py-1" : "text-sm px-3 py-2";
 
@@ -98,11 +99,10 @@ const StarRating = ({
               onClick={() => handleClick(star)}
               onMouseEnter={() => handleMouseEnter(star)}
               onMouseLeave={handleMouseLeave}
-              className={`${
-                interactive
+              className={`${interactive
                   ? "cursor-pointer hover:scale-110"
                   : "cursor-default"
-              } transition-all duration-200 ${size}`}
+                } transition-all duration-200 ${size}`}
               disabled={!interactive}
             >
               {isFilled ? (
@@ -151,7 +151,7 @@ const RatingForm = ({
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (formData.rating === 0) {
-      alert("Please select a rating");
+      toast.error("Please select a rating");
       return;
     }
 
@@ -160,7 +160,7 @@ const RatingForm = ({
       await onSubmit(formData);
     } catch (error) {
       console.error("Error submitting rating:", error);
-      alert("Failed to submit rating. Please try again.");
+      toast.error("Failed to submit rating. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -251,11 +251,10 @@ const RatingForm = ({
               onClick={() =>
                 setFormData((prev) => ({ ...prev, wouldRecommend: true }))
               }
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors ${
-                formData.wouldRecommend
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors ${formData.wouldRecommend
                   ? "bg-green-500/20 border-green-500 text-green-400"
                   : "border-white/20 text-white/70 hover:border-green-500/50"
-              }`}
+                }`}
             >
               <IoThumbsUpOutline />
               Yes, I recommend it
@@ -265,11 +264,10 @@ const RatingForm = ({
               onClick={() =>
                 setFormData((prev) => ({ ...prev, wouldRecommend: false }))
               }
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors ${
-                !formData.wouldRecommend
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors ${!formData.wouldRecommend
                   ? "bg-red-500/20 border-red-500 text-red-400"
                   : "border-white/20 text-white/70 hover:border-red-500/50"
-              }`}
+                }`}
             >
               <IoThumbsDownOutline />
               No, I don't recommend it
@@ -288,8 +286,8 @@ const RatingForm = ({
             {isSubmitting
               ? "Submitting..."
               : initialData
-              ? "Update Rating"
-              : "Submit Rating"}
+                ? "Update Rating"
+                : "Submit Rating"}
           </button>
           {onCancel && (
             <button
@@ -394,19 +392,19 @@ const RatingCard = ({ rating, onEdit, onDelete, showActions = true }) => {
             rating.membershipName ||
             rating.membershipPackage ||
             rating.membershipType) && (
-            <MembershipBadge
-              membershipName={
-                rating.subscription?.membershipId?.name ||
-                rating.membershipName ||
-                (rating.membershipPackage !== "free"
-                  ? rating.membershipPackage
-                  : null) ||
-                (rating.membershipType !== "free"
-                  ? rating.membershipType
-                  : "Free")
-              }
-            />
-          )}
+              <MembershipBadge
+                membershipName={
+                  rating.subscription?.membershipId?.name ||
+                  rating.membershipName ||
+                  (rating.membershipPackage !== "free"
+                    ? rating.membershipPackage
+                    : null) ||
+                  (rating.membershipType !== "free"
+                    ? rating.membershipType
+                    : "Free")
+                }
+              />
+            )}
           {rating.daysUsed > 0 && (
             <span className="flex items-center gap-1">
               <IoTimeOutline />
@@ -414,9 +412,8 @@ const RatingCard = ({ rating, onEdit, onDelete, showActions = true }) => {
             </span>
           )}
           <span
-            className={`flex items-center gap-1 ${
-              rating.wouldRecommend ? "text-green-400" : "text-red-400"
-            }`}
+            className={`flex items-center gap-1 ${rating.wouldRecommend ? "text-green-400" : "text-red-400"
+              }`}
           >
             {rating.wouldRecommend ? <IoHeart /> : <IoThumbsDownOutline />}
             {rating.wouldRecommend ? "Recommends" : "Does not recommend"}
@@ -631,9 +628,8 @@ const PlatformRatingStats = () => {
 
               return (
                 <div
-                  key={`membership-stat-${index}-${
-                    stat.membershipName || "free"
-                  }`}
+                  key={`membership-stat-${index}-${stat.membershipName || "free"
+                    }`}
                   className="bg-white/5 rounded-lg p-4"
                 >
                   <div className="flex items-center justify-between mb-3">
@@ -698,7 +694,7 @@ const UserRatingPage = () => {
     } catch (error) {
       console.error("❌ Error fetching data:", error);
       if (error.response?.status === 401) {
-        alert("Please login to view your ratings");
+        toast.error("Please login to view your ratings");
       }
     } finally {
       setLoading(false);
@@ -709,7 +705,7 @@ const UserRatingPage = () => {
     try {
       const response = await api.post("/ratings", formData);
       if (response.data.status === "OK") {
-        alert(response.data.message);
+        toast.success(response.data.message);
         setActiveTab("my-ratings");
         checkCanRateAndFetchRatings();
       }
@@ -725,7 +721,7 @@ const UserRatingPage = () => {
     try {
       const response = await api.put(`/ratings/${editingRating._id}`, formData);
       if (response.data.status === "OK") {
-        alert(response.data.message);
+        toast.success(response.data.message);
         setEditingRating(null);
         setActiveTab("my-ratings");
         checkCanRateAndFetchRatings();
@@ -748,15 +744,15 @@ const UserRatingPage = () => {
       try {
         const response = await api.delete(`/ratings/${ratingId}`);
         if (response.data.status === "OK") {
-          alert(response.data.message);
+          toast.success(response.data.message);
           checkCanRateAndFetchRatings();
         }
       } catch (error) {
         console.error("Error deleting rating:", error);
         if (error.response?.data?.message) {
-          alert(error.response.data.message);
+          toast.error(error.response.data.message);
         } else {
-          alert("Failed to delete rating. Please try again.");
+          toast.error("Failed to delete rating. Please try again.");
         }
       }
     }
@@ -805,32 +801,29 @@ const UserRatingPage = () => {
             <div className="flex gap-1">
               <button
                 onClick={() => setActiveTab("view")}
-                className={`px-6 py-2 rounded-lg transition-colors ${
-                  activeTab === "view"
+                className={`px-6 py-2 rounded-lg transition-colors ${activeTab === "view"
                     ? "bg-purple-500 text-white"
                     : "text-white/70 hover:text-white"
-                }`}
+                  }`}
               >
                 Platform Stats
               </button>
               <button
                 onClick={() => setActiveTab("my-ratings")}
-                className={`px-6 py-2 rounded-lg transition-colors ${
-                  activeTab === "my-ratings"
+                className={`px-6 py-2 rounded-lg transition-colors ${activeTab === "my-ratings"
                     ? "bg-purple-500 text-white"
                     : "text-white/70 hover:text-white"
-                }`}
+                  }`}
               >
                 My Ratings ({myRatings.length})
               </button>
               {canRate && (
                 <button
                   onClick={() => setActiveTab("create")}
-                  className={`px-6 py-2 rounded-lg transition-colors ${
-                    activeTab === "create"
+                  className={`px-6 py-2 rounded-lg transition-colors ${activeTab === "create"
                       ? "bg-purple-500 text-white"
                       : "text-white/70 hover:text-white"
-                  }`}
+                    }`}
                 >
                   Add Rating
                 </button>

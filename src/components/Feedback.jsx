@@ -24,6 +24,7 @@ import {
   IoSearchOutline,
 } from "react-icons/io5";
 import api from "../config/axios";
+import { toast } from "react-toastify";
 
 // Feedback Form Component
 const FeedbackForm = ({
@@ -143,6 +144,7 @@ const FeedbackForm = ({
     setIsSubmitting(true);
     try {
       await onSubmit(formData);
+      toast.success("Feedback submitted successfully!");
     } catch (error) {
       console.error("Error submitting feedback:", error);
       if (error.response?.data?.errors) {
@@ -152,7 +154,7 @@ const FeedbackForm = ({
         });
         setErrors(apiErrors);
       } else {
-        alert(
+        toast.error(
           error.response?.data?.message ||
             "Failed to submit feedback. Please try again."
         );
@@ -872,7 +874,7 @@ const FeedbackComponent = () => {
     } catch (error) {
       console.error("Error fetching feedbacks:", error);
       if (error.response?.status === 401) {
-        alert("Please login to view your feedback");
+        toast.error("Please login to view your feedback");
       }
     } finally {
       setLoading(false);
@@ -883,7 +885,7 @@ const FeedbackComponent = () => {
     try {
       const response = await api.post("/feedback", formData);
       if (response.data.status === "OK") {
-        alert(response.data.message);
+        toast.success(response.data.message);
         setActiveTab("list");
         fetchMyFeedbacks();
       }
@@ -899,7 +901,7 @@ const FeedbackComponent = () => {
         formData
       );
       if (response.data.status === "OK") {
-        alert(response.data.message);
+        toast.success(response.data.message);
         setEditingFeedback(null);
         setActiveTab("list");
         fetchMyFeedbacks();
@@ -919,15 +921,15 @@ const FeedbackComponent = () => {
       try {
         const response = await api.delete(`/feedback/${feedbackId}`);
         if (response.data.status === "OK") {
-          alert(response.data.message);
+          toast.success(response.data.message);
           fetchMyFeedbacks();
         }
       } catch (error) {
         console.error("Error deleting feedback:", error);
         if (error.response?.data?.message) {
-          alert(error.response.data.message);
+          toast.error(error.response.data.message);
         } else {
-          alert("Failed to delete feedback. Please try again.");
+          toast.error("Failed to delete feedback. Please try again.");
         }
       }
     }
